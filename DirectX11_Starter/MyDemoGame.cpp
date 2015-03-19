@@ -143,6 +143,9 @@ bool MyDemoGame::Init()
 	XMMATRIX W = XMMatrixIdentity();
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 
+	//make sure we draw tris correctly
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	// Successfully initialized
 	return true;
 }
