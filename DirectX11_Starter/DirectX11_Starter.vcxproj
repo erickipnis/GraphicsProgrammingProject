@@ -67,6 +67,8 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameEntity.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridTile.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MyDemoGame.cpp" />
@@ -78,6 +80,8 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GameEntity.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridTile.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MyDemoGame.h" />
