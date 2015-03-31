@@ -90,4 +90,8 @@ private:
 	// Lighting
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
+
+	//GameState enum
+	enum GameState { Start, Game, Paused, Over };
+	GameState state;
 };

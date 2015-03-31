@@ -66,28 +66,34 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Directional.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameEntity.cpp" />
-    <ClCompile Include="Grid.cpp" />
-    <ClCompile Include="GridTile.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MyDemoGame.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DirectXGame.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Directional.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameEntity.h" />
-    <ClInclude Include="Grid.h" />
-    <ClInclude Include="GridTile.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MyDemoGame.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="DirectXGame.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

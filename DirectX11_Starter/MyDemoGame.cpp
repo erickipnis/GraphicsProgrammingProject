@@ -57,6 +57,7 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 	windowCaption = L"Demo DX11 Game";
 	windowWidth = 1280;
 	windowHeight = 720;
+	state = Start;
 }
 
 MyDemoGame::~MyDemoGame()
@@ -216,24 +217,48 @@ void MyDemoGame::OnResize()
 // Update your game state
 void MyDemoGame::UpdateScene(float dt)
 {
-	// Take input, update game logic, etc.
-	entities[0]->Translate(XMFLOAT3(1.0f * dt, 0.0f, 0.0f));
-	entities[0]->Rotate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
-	entities[0]->Update();
+	switch (state)
+	{
+		case Start:
 
-	entities[1]->Translate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
-	entities[1]->Rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	entities[1]->Update();
+			break;
 
-	entities[2]->Translate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
-	entities[2]->Rotate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
-	entities[2]->Update();
+		case Game:
+			if (GetAsyncKeyState('P') && 0x8000)
+			{
+				state = Paused;
+			}
+			// Take input, update game logic, etc.
+			entities[0]->Translate(XMFLOAT3(1.0f * dt, 0.0f, 0.0f));
+			entities[0]->Rotate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
+			entities[0]->Update();
 
-	entities[3]->Translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	entities[3]->Rotate(XMFLOAT3(0.0f, 0.0f, 2.0f * dt));
-	entities[3]->Update();
+			entities[1]->Translate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
+			entities[1]->Rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			entities[1]->Update();
 
-	camera->Update();
+			entities[2]->Translate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
+			entities[2]->Rotate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
+			entities[2]->Update();
+
+			entities[3]->Translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			entities[3]->Rotate(XMFLOAT3(0.0f, 0.0f, 2.0f * dt));
+			entities[3]->Update();
+
+			camera->Update();
+			break;
+
+		case Paused:
+			if (GetAsyncKeyState('P') && 0x8000)
+			{
+				state = Game;
+			}
+			break;
+
+		case Over:
+
+			break;
+	}
 }
 
 // Clear the screen, redraw everything, present
@@ -252,10 +277,29 @@ void MyDemoGame::DrawScene()
 		1.0f,
 		0);
 
-	
-	for (int i = 0; i < entities.size(); i++)
+	switch (state)
 	{
-		entities[i]->Draw(*deviceContext, *camera);
+	case Start:
+
+		break;
+
+	case Game:
+		for (int i = 0; i < entities.size(); i++)
+		{
+			entities[i]->Draw(*deviceContext, *camera);
+		}
+		break;
+
+	case Paused:
+		for (int i = 0; i < entities.size(); i++)
+		{
+			entities[i]->Draw(*deviceContext, *camera);
+		}
+		break;
+
+	case Over:
+
+		break;
 	}
 
 	
@@ -283,6 +327,10 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
+	if (state == Start)
+	{
+		state = Game;
+	}
 }
 
 void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
