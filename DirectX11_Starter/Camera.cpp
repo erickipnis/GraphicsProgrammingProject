@@ -2,8 +2,8 @@
 
 Camera::Camera()
 {
-	mPosition = XMFLOAT3(0.0f, 0.0f, -5.0f);
-	mDirection = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	mPosition = XMFLOAT3(0.0f, 10.0f, 0.0f);
+	mDirection = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	mRotationX = 0.0f;
 	mRotationY = 0.0f;
@@ -23,7 +23,7 @@ void Camera::Update()
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
 	XMVECTOR direction = XMVector3Rotate(forward, rotation);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	
+
 	XMStoreFloat3(&mDirection, direction);
 	XMVECTOR right = XMVectorSet(-mDirection.z, 0.0f, mDirection.x, 0.0f);
 	XMVECTOR offset = XMVectorZero();
@@ -61,7 +61,6 @@ void Camera::Update()
 	XMMATRIX tempView = XMMatrixLookToLH(tempPosition, direction, up);
 	XMStoreFloat4x4(&mViewMatrix, XMMatrixTranspose(tempView));
 	XMStoreFloat3(&mPosition, tempPosition);
-
 }
 
 void Camera::UpdateProjection(float aspectRatio)

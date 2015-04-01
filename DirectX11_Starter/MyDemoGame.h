@@ -7,6 +7,7 @@
 #include "GameEntity.h"
 #include "WICTextureLoader.h"
 #include <vector>
+#include "Ship.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -77,6 +78,9 @@ private:
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
+
+	//vector of ships
+	std::vector<Ship*> ships;
 
 	// SimpleShaders
 	SimplePixelShader* pixelShader;

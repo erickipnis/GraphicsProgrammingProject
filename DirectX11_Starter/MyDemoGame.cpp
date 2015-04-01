@@ -166,10 +166,21 @@ bool MyDemoGame::Init()
 	entities.push_back(new GameEntity(mesh2, material));
 	entities.push_back(new GameEntity(mesh2, material));
 	entities.push_back(new GameEntity(mesh3, material));
-	entities[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 10.0f));
-	entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
-	entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
-	entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
+	//entities[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 10.0f));
+	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
+	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
+	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
+
+	//create the ships
+	ships.push_back(new Ship(entities[0]));
+	ships.push_back(new Ship(entities[1]));
+	ships.push_back(new Ship(entities[2]));
+	ships.push_back(new Ship(entities[3]));
+
+	ships[0]->shipEntity->SetPosition(XMFLOAT3(-5.0f, 0.0f, 3.0f));
+	ships[1]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
+	ships[2]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -2.0f, 0.0f));
+	ships[3]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, -3.0f));
 
 
 	// Load pixel & vertex shaders, and then create an input layout
@@ -243,6 +254,8 @@ void MyDemoGame::LoadShadersAndInputLayout()
 void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera();
+	camera->Rotate(0, 310);
+	camera->Update();
 }
 
 #pragma endregion
@@ -276,21 +289,16 @@ void MyDemoGame::UpdateScene(float dt)
 				state = Paused;
 			}
 			// Take input, update game logic, etc.
-			entities[0]->Translate(XMFLOAT3(1.0f * dt, 0.0f, 0.0f));
-			entities[0]->Rotate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
-			entities[0]->Update();
-
-			entities[1]->Translate(XMFLOAT3(0.0f, cos(timer.TotalTime()) * dt, 0.0f));
-			entities[1]->Rotate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-			entities[1]->Update();
-
-			entities[2]->Translate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
-			entities[2]->Rotate(XMFLOAT3(0.0f, 0.0f, 1.0f * dt));
-			entities[2]->Update();
-
-			entities[3]->Translate(XMFLOAT3(0.0f, 0.0f, 0.0f));
-			entities[3]->Rotate(XMFLOAT3(0.0f, 0.0f, 2.0f * dt));
-			entities[3]->Update();
+			if (GetAsyncKeyState('M'))
+			{
+				ships[0]->shipEntity->Translate(XMFLOAT3(1.0f * dt, 0.0f, 0.0f));
+				ships[0]->shipEntity->Update();
+			}
+			for (int i = 0; i < ships.size(); i++)
+			{
+				ships[i]->shipEntity->Translate(XMFLOAT3(ships[i]->speed * dt, 0.0f, 0.0f));
+				ships[i]->shipEntity->Update();
+			}
 
 			camera->Update();
 			break;
@@ -368,7 +376,19 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
+	float pointX = (2.0f *  (float)x / (float)1280) - 1.0f;
+	float pointY = (2.0f *  (float)y / (float)720) - 1.0f;
+
+
 	SetCapture(hMainWnd);
+
+	//make a new ship
+	entities.push_back(new GameEntity(mesh3, material));
+	ships.push_back(new Ship(entities[entities.size() - 1]));
+
+	ships[ships.size() - 1]->shipEntity->SetPosition(XMFLOAT3(pointX * 7, 0.0f, -pointY * 5));
+	ships[ships.size() - 1]->speed = 1;
+	ships[ships.size() - 1]->shipEntity->Update();
 }
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
@@ -386,7 +406,7 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	int yDif = y - prevMousePos.y;
 
 	if (prevMousePos.x != 0)
-		camera->Rotate(xDif, yDif);
+		//camera->Rotate(xDif, yDif);
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 }
