@@ -63,21 +63,54 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 MyDemoGame::~MyDemoGame()
 {
 	// delete the pointers
-	delete mesh1;
-	delete mesh2;
-	delete mesh3;
+	if (mesh1 != nullptr)
+	{
+		delete mesh1;
+		mesh1 = nullptr;
+	}
+	if (mesh2 != nullptr)
+	{
+		delete mesh2;
+		mesh2 = nullptr;
+	}
+	if (mesh3 != nullptr)
+	{
+		delete mesh3;
+		mesh3 = nullptr;
+	}
+
+	if (material != nullptr)
+	{
+		delete material;
+		material = nullptr;
+	}
 
 	for (int i = 0; i < entities.size(); i++)
 	{
-		delete entities[i];
+		if (entities[i] != nullptr)
+		{
+			delete entities[i];
+			entities[i] = nullptr;
+		}
 	}
 
-	delete camera;
+	if (camera != nullptr)
+	{
+		delete camera;
+		camera = nullptr;
+	}
 
-	delete pixelShader;
-	delete vertexShader;
+	if (pixelShader != nullptr)
+	{
+		delete pixelShader;
+		pixelShader = nullptr;
+	}
 
-	delete material;
+	if (vertexShader != nullptr)
+	{
+		delete vertexShader;
+		vertexShader = nullptr;
+	}
 }
 
 #pragma endregion
@@ -111,8 +144,22 @@ bool MyDemoGame::Init()
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	vertexShader = new SimpleVertexShader(device, deviceContext);
 
+	// create sampler state and resource view for materials
+	ID3D11ShaderResourceView* srv;
+	ID3D11SamplerState* samplerState;
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	material = new Material(pixelShader, vertexShader);
+	device->CreateSamplerState(&samplerDesc, &samplerState);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"stones.jpg", 0, &srv);
+
+	material = new Material(pixelShader, vertexShader, srv, samplerState);
 
 	// Create the game entities
 	entities.push_back(new GameEntity(mesh1, material));

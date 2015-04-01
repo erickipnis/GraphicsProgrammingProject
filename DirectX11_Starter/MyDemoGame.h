@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "Mesh.h"
 #include "GameEntity.h"
+#include "WICTextureLoader.h"
 #include <vector>
 
 // Include run-time memory checking in debug builds
