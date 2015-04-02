@@ -4,6 +4,7 @@
 #include "DirectXGame.h"
 #include "Vertex.h"
 #include "Mesh.h"
+#include "Grid.h"
 #include "GameEntity.h"
 #include "WICTextureLoader.h"
 #include <vector>
@@ -99,4 +100,8 @@ private:
 	//GameState enum
 	enum GameState { Start, Game, Paused, Over };
 	GameState state;
+	bool pauseKeyDown;
+
+	// Grid
+	Grid* grid;
 };

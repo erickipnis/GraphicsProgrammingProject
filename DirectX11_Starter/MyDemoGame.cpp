@@ -93,6 +93,15 @@ MyDemoGame::~MyDemoGame()
 			entities[i] = nullptr;
 		}
 	}
+	for (int i = 0; i < ships.size(); i++)
+	{
+		if (ships[i] != nullptr)
+		{
+			delete ships[i];
+			ships[i] = nullptr;
+		}
+	}
+
 
 	if (camera != nullptr)
 	{
@@ -110,6 +119,12 @@ MyDemoGame::~MyDemoGame()
 	{
 		delete vertexShader;
 		vertexShader = nullptr;
+	}
+
+	if (grid != nullptr)
+	{
+		delete grid;
+		grid = nullptr;
 	}
 }
 
@@ -157,31 +172,26 @@ bool MyDemoGame::Init()
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
 
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"stones.jpg", 0, &srv);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 
 	// Create the game entities
-	entities.push_back(new GameEntity(mesh1, material));
+	//entities.push_back(new GameEntity(mesh1, material));
 	entities.push_back(new GameEntity(mesh2, material));
-	entities.push_back(new GameEntity(mesh2, material));
-	entities.push_back(new GameEntity(mesh3, material));
-	//entities[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 10.0f));
+	//entities.push_back(new GameEntity(mesh2, material));
+	//entities.push_back(new GameEntity(mesh3, material));
+	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
 	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
 	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
 	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
 
 	//create the ships
-	ships.push_back(new Ship(entities[0]));
-	ships.push_back(new Ship(entities[1]));
-	ships.push_back(new Ship(entities[2]));
-	ships.push_back(new Ship(entities[3]));
+	//ships.push_back(new Ship(entities[0]));
+	//ships.push_back(new Ship(entities[1]));
 
-	ships[0]->shipEntity->SetPosition(XMFLOAT3(-5.0f, 0.0f, 3.0f));
-	ships[1]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
-	ships[2]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -2.0f, 0.0f));
-	ships[3]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, -3.0f));
-
+	//ships[0]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
+	//ships[1]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -2.0f, 0.0f));
 
 	// Load pixel & vertex shaders, and then create an input layout
 	LoadShadersAndInputLayout();
@@ -201,6 +211,9 @@ bool MyDemoGame::Init()
 	//  update when/if the object moves (every frame)
 	XMMATRIX W = XMMatrixIdentity();
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
+	
+	// Set up the grid
+	grid = new Grid(2, 2, 2.0f, XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	//make sure we draw tris correctly
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -227,7 +240,7 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	mesh2 = new Mesh("cube.obj", device);
 
-	mesh3 = new Mesh("torus.obj", device);
+	mesh3 = new Mesh("Boat.obj", device);
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -254,7 +267,8 @@ void MyDemoGame::LoadShadersAndInputLayout()
 void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera();
-	camera->Rotate(0, 310);
+	camera->SetDirection(XMFLOAT3(0.0f, -0.99f, 0.01f));
+	//camera->Rotate(0, 310);
 	camera->Update();
 }
 
@@ -286,7 +300,15 @@ void MyDemoGame::UpdateScene(float dt)
 		case Game:
 			if (GetAsyncKeyState('P') && 0x8000)
 			{
-				state = Paused;
+				if (!pauseKeyDown)
+				{
+					state = Paused;
+				}
+				pauseKeyDown = true;
+			}
+			else
+			{
+				pauseKeyDown = false;
 			}
 			// Take input, update game logic, etc.
 			if (GetAsyncKeyState('M'))
@@ -306,7 +328,15 @@ void MyDemoGame::UpdateScene(float dt)
 		case Paused:
 			if (GetAsyncKeyState('P') && 0x8000)
 			{
-				state = Game;
+				if (!pauseKeyDown)
+				{
+					state = Game;
+				}
+				pauseKeyDown = true;
+			}
+			else
+			{
+				pauseKeyDown = false;
 			}
 			break;
 
@@ -320,12 +350,15 @@ void MyDemoGame::UpdateScene(float dt)
 void MyDemoGame::DrawScene()
 {
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
+	const float startColor[4] = {0.2f, 0.2f, 0.2f, 0.0f};
+	const float gameColor[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
+	const float pauseColor[4] = { 0.15f, 0.35f, 0.5f, 0.0f };
+
 
 	// Clear the buffer (erases what's on the screen)
 	//  - Do this once per frame
 	//  - At the beginning (before drawing anything)
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
+	deviceContext->ClearRenderTargetView(renderTargetView, startColor);
 	deviceContext->ClearDepthStencilView(
 		depthStencilView, 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
@@ -339,6 +372,7 @@ void MyDemoGame::DrawScene()
 		break;
 
 	case Game:
+		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
 		for (int i = 0; i < entities.size(); i++)
 		{
 			entities[i]->Draw(*deviceContext, *camera);
@@ -346,6 +380,7 @@ void MyDemoGame::DrawScene()
 		break;
 
 	case Paused:
+		deviceContext->ClearRenderTargetView(renderTargetView, pauseColor);
 		for (int i = 0; i < entities.size(); i++)
 		{
 			entities[i]->Draw(*deviceContext, *camera);
@@ -389,6 +424,8 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	ships[ships.size() - 1]->shipEntity->SetPosition(XMFLOAT3(pointX * 7, 0.0f, -pointY * 5));
 	ships[ships.size() - 1]->speed = 1;
 	ships[ships.size() - 1]->shipEntity->Update();
+	ships[ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+	ships[ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
 }
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)

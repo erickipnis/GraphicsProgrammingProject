@@ -21,7 +21,7 @@ void Camera::Update()
 	timer.Tick();
 	XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(mRotationY, mRotationX, 0.0f);
 	XMVECTOR forward = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-	XMVECTOR direction = XMVector3Rotate(forward, rotation);
+	XMVECTOR direction = XMLoadFloat3(&mDirection);
 	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	XMStoreFloat3(&mDirection, direction);
@@ -29,7 +29,7 @@ void Camera::Update()
 	XMVECTOR offset = XMVectorZero();
 
 
-	if (GetAsyncKeyState('W') && 0x8000)
+	/*if (GetAsyncKeyState('W') && 0x8000)
 	{
 		offset += direction * timer.DeltaTime();
 	}
@@ -52,9 +52,9 @@ void Camera::Update()
 	if (GetAsyncKeyState('X') && 0x8000)
 	{
 		offset -= up * timer.DeltaTime();
-	}
+	}*/
 
-	offset *= 2.0f;
+	//offset *= 2.0f;
 
 	XMVECTOR tempPosition = XMLoadFloat3(&mPosition);
 	tempPosition += offset;
@@ -78,4 +78,9 @@ void Camera::Rotate(int xDif, int yDif)
 {
 	mRotationX += xDif * 0.005f;
 	mRotationY += yDif * 0.005f;
+}
+
+void Camera::SetDirection(XMFLOAT3 direction)
+{
+	mDirection = direction;
 }

@@ -1,8 +1,10 @@
 #include "GridTile.h"
 
 
-GridTile::GridTile()
+GridTile::GridTile(XMFLOAT3 position)
 {
+	occupied = false;
+	mPosition = position;
 }
 
 
@@ -18,4 +20,9 @@ bool GridTile::IsOccupied()
 void GridTile::setStatus(bool status)
 {
 	occupied = status;
+}
+
+XMFLOAT3 GridTile::GetPosition()
+{
+	return mPosition;
 }
