@@ -138,11 +138,11 @@ bool MyDemoGame::Init()
 {
 	// Initialize Lights
 	directionalLight.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	directionalLight.DiffuseColor = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	directionalLight.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	directionalLight.Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
 	directionalLight2.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	directionalLight2.DiffuseColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	directionalLight2.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	directionalLight2.Direction = XMFLOAT3(-1.0f, 1.0f, -1.0f);
 
 	// Set up camera-related matrices
