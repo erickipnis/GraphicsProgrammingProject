@@ -76,6 +76,7 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+	Mesh* waterMesh;
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
@@ -92,6 +93,7 @@ private:
 
 	// Materials
 	Material* material;
+	Material* waterMaterial;
 
 	// Lighting
 	DirectionalLight directionalLight;

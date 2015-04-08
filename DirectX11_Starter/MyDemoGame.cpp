@@ -78,11 +78,21 @@ MyDemoGame::~MyDemoGame()
 		delete mesh3;
 		mesh3 = nullptr;
 	}
+	if (waterMesh != nullptr)
+	{
+		delete waterMesh;
+		waterMesh = nullptr;
+	}
 
 	if (material != nullptr)
 	{
 		delete material;
 		material = nullptr;
+	}
+	if (waterMaterial != nullptr)
+	{
+		delete waterMaterial;
+		waterMaterial = nullptr;
 	}
 
 	for (int i = 0; i < entities.size(); i++)
@@ -170,11 +180,15 @@ bool MyDemoGame::Init()
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	ID3D11ShaderResourceView* waterSRV;
+
 	device->CreateSamplerState(&samplerDesc, &samplerState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.jpg", 0, &waterSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
+	waterMaterial = new Material(pixelShader, vertexShader, waterSRV, samplerState);
 
 	// Create the game entities
 	//entities.push_back(new GameEntity(mesh1, material));
@@ -185,6 +199,9 @@ bool MyDemoGame::Init()
 	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
 	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
 	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
+
+	entities.push_back(new GameEntity(waterMesh, waterMaterial));
+	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
 
 	//create the ships
 	//ships.push_back(new Ship(entities[0]));
@@ -241,6 +258,8 @@ void MyDemoGame::CreateGeometryBuffers()
 	mesh2 = new Mesh("cube.obj", device);
 
 	mesh3 = new Mesh("Boat.obj", device);
+
+	waterMesh = new Mesh("plain.obj", device);
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
