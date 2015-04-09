@@ -78,6 +78,11 @@ MyDemoGame::~MyDemoGame()
 		delete mesh3;
 		mesh3 = nullptr;
 	}
+	if (startMenu != nullptr)
+	{
+		delete startMenu;
+		startMenu = nullptr;
+	}
 	if (waterMesh != nullptr)
 	{
 		delete waterMesh;
@@ -147,11 +152,11 @@ MyDemoGame::~MyDemoGame()
 bool MyDemoGame::Init()
 {
 	// Initialize Lights
-	directionalLight.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	directionalLight.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	directionalLight.Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
-	directionalLight2.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	directionalLight2.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight2.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	directionalLight2.Direction = XMFLOAT3(-1.0f, 1.0f, -1.0f);
 
@@ -181,16 +186,34 @@ bool MyDemoGame::Init()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	ID3D11ShaderResourceView* waterSRV;
+	ID3D11ShaderResourceView* defaultSRV;
+	ID3D11ShaderResourceView* startSRV;
+	ID3D11ShaderResourceView* instructSRV;
+	ID3D11ShaderResourceView* scoreSRV;
+	ID3D11ShaderResourceView* creditSRV;
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureDefault.png", 0, &defaultSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureStart.png", 0, &startSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureInstructions.png", 0, &instructSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureScore.png", 0, &scoreSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.jpg", 0, &waterSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 	waterMaterial = new Material(pixelShader, vertexShader, waterSRV, samplerState);
+	startDefaultMaterial = new Material(pixelShader, vertexShader, defaultSRV, samplerState);
+	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
+	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
+	startScoreMaterial = new Material(pixelShader, vertexShader, scoreSRV, samplerState);
 
 	// Create the game entities
+	startScreen = new GameEntity(waterMesh, startDefaultMaterial);
+	startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.1f));
+	//startScreen->SetRotation(XMFLOAT3(3.1416f/2.0f, 0.0f, 0.0f));
+	startScreen->SetScale(XMFLOAT3(1.77f, 1.0f, 1.15f));
+	startScreen->Update();
 	//entities.push_back(new GameEntity(mesh1, material));
 	entities.push_back(new GameEntity(mesh2, material));
 	//entities.push_back(new GameEntity(mesh2, material));
@@ -199,7 +222,6 @@ bool MyDemoGame::Init()
 	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
 	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
 	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
-
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
 	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
 
@@ -245,10 +267,10 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	Vertex vertices[4] = 
 	{
-		{ XMFLOAT3(0.5, 0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(0.5, -0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(-0.5, -0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f) },
-		{ XMFLOAT3(-0.5, 0.5f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }
+		{ XMFLOAT3(0.5, 0.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(0.5, 0.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(-0.5, 0.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f,0.0f) },
+		{ XMFLOAT3(-0.5, 0.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }
 	};
 
 	UINT indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -258,6 +280,8 @@ void MyDemoGame::CreateGeometryBuffers()
 	mesh2 = new Mesh("cube.obj", device);
 
 	mesh3 = new Mesh("Boat.obj", device);
+
+	startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
 }
@@ -313,7 +337,7 @@ void MyDemoGame::UpdateScene(float dt)
 	switch (state)
 	{
 		case Start:
-
+			//if (prevMousePos.x < )
 			break;
 
 		case Game:
@@ -387,7 +411,7 @@ void MyDemoGame::DrawScene()
 	switch (state)
 	{
 	case Start:
-
+		startScreen->Draw(*deviceContext, *camera);
 		break;
 
 	case Game:

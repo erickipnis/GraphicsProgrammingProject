@@ -76,7 +76,10 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+	Mesh* startMenu;
 	Mesh* waterMesh;
+
+	GameEntity* startScreen;
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
@@ -93,6 +96,10 @@ private:
 
 	// Materials
 	Material* material;
+	Material* startDefaultMaterial;
+	Material* startStartMaterial;
+	Material* startInstructMaterial;
+	Material* startScoreMaterial;
 	Material* waterMaterial;
 
 	// Lighting
