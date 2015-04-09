@@ -185,7 +185,7 @@ bool MyDemoGame::Init()
 	device->CreateSamplerState(&samplerDesc, &samplerState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.jpg", 0, &waterSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 	waterMaterial = new Material(pixelShader, vertexShader, waterSRV, samplerState);
