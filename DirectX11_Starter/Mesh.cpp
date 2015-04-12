@@ -177,3 +177,58 @@ Mesh::~Mesh()
 	ReleaseMacro(mVertexBuffer);
 	ReleaseMacro(mIndexBuffer);
 }
+
+void Mesh::CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, vector<XMFLOAT3> normalsVect, vector<XMFLOAT2> uvsVect, vector<Vertex> vertsVect, vector<UINT> indicesVect)
+{
+	XMFLOAT3* tan1 = new XMFLOAT3[numVertices * 2];
+	XMFLOAT3* tan2 = tan1 + numVertices;
+	ZeroMemory(tan1, numVertices * sizeof(XMFLOAT3) * 2);
+
+	for (unsigned int i = 0; i < numVertices; i += 3)
+	{
+		// Get the three vertices that make up a triangle
+		Vertex v1 = vertsVect[i];
+		Vertex v2 = vertsVect[i + 1];
+		Vertex v3 = vertsVect[i + 2];
+
+		// Get the three texture coordinates associated with the triangle
+		XMFLOAT2 w1 = v1.UV;
+		XMFLOAT2 w2 = v2.UV;
+		XMFLOAT2 w3 = v3.UV;
+
+		float x1 = v2.Position.x - v1.Position.x;
+		float x2 = v3.Position.x - v1.Position.x;
+		float y1 = v2.Position.y - v1.Position.y;
+		float y2 = v3.Position.y - v1.Position.y;
+		float z1 = v2.Position.z - v1.Position.z;
+		float z2 = v3.Position.z - v1.Position.z;
+
+		float s1 = w2.x - w1.x;
+		float s2 = w3.x - w1.x;
+		float t1 = w2.y - w1.y;
+		float t2 = w3.y - w1.y;
+
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+
+		XMFLOAT3 sDirection = XMFLOAT3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+		XMFLOAT3 tDirection = XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+	}
+
+	for (j = 0; j < numVertices; j++)
+	{
+		XMFLOAT3 n = normalsVect[j];
+		XMFLOAT3 t = tan1[j];
+
+		//XMFLOAT4* tangent;
+
+		// Gram-Schmidt Orthogonalize
+		// tangent[j] = (t - n * Dot(n, t)).Normalize();
+
+		// Calculate handedness
+		// tangent[j].w = (Dot(Cross(n, t), tan2[j]) < 0.0f) ? -1.0f : 1.0f;
+
+	}
+
+	delete[] tan1;
+	delete[] tan2;
+}
