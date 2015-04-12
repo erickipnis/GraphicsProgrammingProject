@@ -8,6 +8,7 @@
 #include "dxerr.h"
 #include "GameTimer.h"
 #include "Vertex.h"
+#include "BoundingBox.h"
 
 // Convenience macro for releasing a COM object
 #define ReleaseMacro(x) { if(x){ x->Release(); x = 0; } }
@@ -48,5 +49,7 @@ private:
 	ID3D11Buffer* mVertexBuffer;
 	ID3D11Buffer* mIndexBuffer;
 	int mIndices;
+
+	BoundingBox mBoundingBox;
 };
 

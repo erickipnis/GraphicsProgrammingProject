@@ -1,15 +1,18 @@
 #pragma once
 #include "GridTile.h"
+//#include "Camera.h"
 
 class Grid
 {
 public:
-	Grid(int rows, int columns, float size, XMFLOAT3 offset);
+	Grid();
+	Grid(int rows, int columns, float size, XMFLOAT3 offset, Mesh* mesh, Material* material);
 	~Grid();
 
 	int GetColumns();
 	int GetRows();
-	GridTile* GetNearestTile(XMFLOAT3 position);
+	GridTile* GetNearestTile(float xPos, float yPos, int screenWidth, int screenHeight, Camera* camera);
+	void Draw(ID3D11DeviceContext& deivce, Camera& camera);
 private:
 
 	int numTiles;
@@ -19,8 +22,8 @@ private:
 	// the size of each grid
 	float mSize;
 
-	// dynamic 2d array of tile pointers
-	GridTile*** tiles;
+	// vector of tile pointers
+	std::vector<GridTile*> tiles;
 };
 
 

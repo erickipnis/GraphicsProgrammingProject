@@ -4,8 +4,8 @@
 #include "DirectXGame.h"
 #include "Vertex.h"
 #include "Mesh.h"
-#include "Grid.h"
 #include "GameEntity.h"
+#include "Grid.h"
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Ship.h"
@@ -76,6 +76,7 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+	Mesh* tileMesh;
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
@@ -92,6 +93,7 @@ private:
 
 	// Materials
 	Material* material;
+	Material* tileMaterial;
 
 	// Lighting
 	DirectionalLight directionalLight;
