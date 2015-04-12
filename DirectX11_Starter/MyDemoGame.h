@@ -76,14 +76,11 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
-<<<<<<< .merge_file_a02884
 	Mesh* tileMesh;
-=======
 	Mesh* startMenu;
 	Mesh* waterMesh;
 
 	GameEntity* startScreen;
->>>>>>> .merge_file_a04652
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
@@ -102,15 +99,13 @@ private:
 
 	// Materials
 	Material* material;
-<<<<<<< .merge_file_a02884
 	Material* tileMaterial;
-=======
+
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
->>>>>>> .merge_file_a04652
 
 	// Lighting
 	DirectionalLight directionalLight;
