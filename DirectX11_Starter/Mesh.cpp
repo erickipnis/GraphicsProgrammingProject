@@ -170,6 +170,9 @@ Mesh::Mesh(char* file, ID3D11Device* device)
 	D3D11_SUBRESOURCE_DATA initialIndexData;
 	initialIndexData.pSysMem = &indices[0];
 	HR(device->CreateBuffer(&ibd, &initialIndexData, &mIndexBuffer));
+
+	// create the BoundingBox
+	mBoundingBox = BoundingBox(verts);
 }
 
 Mesh::~Mesh()

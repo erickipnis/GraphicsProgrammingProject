@@ -8,6 +8,7 @@
 #include "dxerr.h"
 #include "GameTimer.h"
 #include "Vertex.h"
+#include "BoundingBox.h"
 
 using namespace std;
 
@@ -52,5 +53,7 @@ private:
 	ID3D11Buffer* mVertexBuffer;
 	ID3D11Buffer* mIndexBuffer;
 	int mIndices;
+
+	BoundingBox mBoundingBox;
 };
 

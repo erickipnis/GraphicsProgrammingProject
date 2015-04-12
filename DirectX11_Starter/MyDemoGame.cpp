@@ -135,6 +135,7 @@ MyDemoGame::~MyDemoGame()
 		delete vertexShader;
 		vertexShader = nullptr;
 	}
+<<<<<<< HEAD
 
 	if (normalMapPixelShader != nullptr)
 	{
@@ -153,6 +154,8 @@ MyDemoGame::~MyDemoGame()
 		delete grid;
 		grid = nullptr;
 	}
+=======
+>>>>>>> 25ac2b4d22f4e7a2a3a4832531a9dc03a5969d20
 }
 
 #pragma endregion
@@ -190,6 +193,8 @@ bool MyDemoGame::Init()
 
 	// create sampler state and resource view for materials
 	ID3D11ShaderResourceView* srv;
+	ID3D11ShaderResourceView* tileSRV;
+
 	ID3D11SamplerState* samplerState;
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
@@ -199,6 +204,15 @@ bool MyDemoGame::Init()
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+<<<<<<< .merge_file_a00628
+	// Testing Blend States for transparency
+	/*ID3D11BlendState* blendState;
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;*/
+=======
 	ID3D11ShaderResourceView* waterSRV;
 	ID3D11ShaderResourceView* waterNormalMapSRV;
 	ID3D11ShaderResourceView* defaultSRV;
@@ -206,10 +220,18 @@ bool MyDemoGame::Init()
 	ID3D11ShaderResourceView* instructSRV;
 	ID3D11ShaderResourceView* scoreSRV;
 	ID3D11ShaderResourceView* creditSRV;
+>>>>>>> .merge_file_a04132
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
+	//device->CreateBlendState(&blendDesc, &blendState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
+<<<<<<< .merge_file_a00628
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"tile2.png", 0, &tileSRV);
+
+	material = new Material(pixelShader, vertexShader, srv, samplerState);
+	tileMaterial = new Material(pixelShader, vertexShader, tileSRV, samplerState);
+=======
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureDefault.png", 0, &defaultSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureStart.png", 0, &startSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureInstructions.png", 0, &instructSRV);
@@ -225,6 +247,7 @@ bool MyDemoGame::Init()
 	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
 	startScoreMaterial = new Material(pixelShader, vertexShader, scoreSRV, samplerState);
+>>>>>>> .merge_file_a04132
 
 	// Create the game entities
 	startScreen = new GameEntity(waterMesh, startDefaultMaterial);
@@ -234,7 +257,7 @@ bool MyDemoGame::Init()
 	startScreen->Update();
 	//entities.push_back(new GameEntity(mesh1, material));
 	entities.push_back(new GameEntity(mesh2, material));
-	//entities.push_back(new GameEntity(mesh2, material));
+	//entities.push_back(new GameEntity(tileMesh, tileMaterial));
 	//entities.push_back(new GameEntity(mesh3, material));
 	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
 	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
@@ -284,7 +307,7 @@ bool MyDemoGame::Init()
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 	
 	// Set up the grid
-	grid = new Grid(2, 2, 2.0f, XMFLOAT3(0.0f, 0.0f, 0.0f));
+	grid = new Grid(6, 10, 1.0f, XMFLOAT3(-4.5f, 0.0f, -0.5f), tileMesh, tileMaterial);
 
 	//make sure we draw tris correctly
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -313,9 +336,13 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	mesh3 = new Mesh("Boat.obj", device);
 
+<<<<<<< .merge_file_a00628
+	tileMesh = new Mesh("tile.obj", device);
+=======
 	startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
+>>>>>>> .merge_file_a04132
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -344,7 +371,7 @@ void MyDemoGame::LoadShadersAndInputLayout()
 void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera();
-	camera->SetDirection(XMFLOAT3(0.0f, -0.99f, 0.01f));
+	camera->SetDirection(XMFLOAT3(0.0f, -0.5f, 0.1f));
 	//camera->Rotate(0, 310);
 	camera->Update();
 }
@@ -450,10 +477,14 @@ void MyDemoGame::DrawScene()
 
 	case Game:
 		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
+
+		grid->Draw(*deviceContext, *camera);
+
 		for (int i = 0; i < entities.size(); i++)
 		{
 			entities[i]->Draw(*deviceContext, *camera);
 		}
+
 		break;
 
 	case Paused:
@@ -494,15 +525,20 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 
 	SetCapture(hMainWnd);
 
+
+	GridTile* closest = grid->GetNearestTile(prevMousePos.x, prevMousePos.y, 1280, 720, camera);
+	XMFLOAT3 shipPos = closest->GetPosition();
+
 	//make a new ship
 	entities.push_back(new GameEntity(mesh3, material));
 	ships.push_back(new Ship(entities[entities.size() - 1]));
 
-	ships[ships.size() - 1]->shipEntity->SetPosition(XMFLOAT3(pointX * 7, 0.0f, -pointY * 5));
+	ships[ships.size() - 1]->shipEntity->SetPosition(shipPos);
 	ships[ships.size() - 1]->speed = 1;
 	ships[ships.size() - 1]->shipEntity->Update();
 	ships[ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
 	ships[ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+
 }
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
