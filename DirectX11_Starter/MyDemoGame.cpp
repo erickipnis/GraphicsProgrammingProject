@@ -136,6 +136,18 @@ MyDemoGame::~MyDemoGame()
 		vertexShader = nullptr;
 	}
 
+	if (normalMapPixelShader != nullptr)
+	{
+		delete normalMapPixelShader;
+		normalMapPixelShader = nullptr;
+	}
+
+	if (normalMapVertexShader != nullptr)
+	{
+		delete normalMapVertexShader;
+		normalMapVertexShader = nullptr;
+	}
+
 	if (grid != nullptr)
 	{
 		delete grid;
@@ -172,7 +184,9 @@ bool MyDemoGame::Init()
 
 	// initialize shaders
 	pixelShader = new SimplePixelShader(device, deviceContext);
+	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
 	vertexShader = new SimpleVertexShader(device, deviceContext);
+	normalMapVertexShader = new SimpleVertexShader(device, deviceContext);
 
 	// create sampler state and resource view for materials
 	ID3D11ShaderResourceView* srv;
@@ -186,6 +200,7 @@ bool MyDemoGame::Init()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	ID3D11ShaderResourceView* waterSRV;
+	ID3D11ShaderResourceView* waterNormalMapSRV;
 	ID3D11ShaderResourceView* defaultSRV;
 	ID3D11ShaderResourceView* startSRV;
 	ID3D11ShaderResourceView* instructSRV;
@@ -199,10 +214,13 @@ bool MyDemoGame::Init()
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureStart.png", 0, &startSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureInstructions.png", 0, &instructSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureScore.png", 0, &scoreSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.jpg", 0, &waterSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water-normal-map.png", 0, &waterNormalMapSRV);
+	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
+	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleNormal.jpg", 0, &waterNormalMapSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
-	waterMaterial = new Material(pixelShader, vertexShader, waterSRV, samplerState);
+	waterMaterial = new Material(normalMapPixelShader, normalMapVertexShader, waterSRV, samplerState);
 	startDefaultMaterial = new Material(pixelShader, vertexShader, defaultSRV, samplerState);
 	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
@@ -222,6 +240,8 @@ bool MyDemoGame::Init()
 	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
 	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
 	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
+
+	// Push the water Game Entity
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
 	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
 
@@ -244,6 +264,18 @@ bool MyDemoGame::Init()
 		"directionalLight2",
 		&directionalLight2,
 		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetData(
+		"directionalLight",
+		&directionalLight,
+		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetData(
+		"directionalLight2",
+		&directionalLight2,
+		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);	
 
 	// Set up world matrix
 	// In an actual game, each object will need one of these and they should
@@ -303,6 +335,8 @@ void MyDemoGame::LoadShadersAndInputLayout()
 
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
+	normalMapPixelShader->LoadShaderFile(L"NormalMapPixelShader.cso");
+	normalMapVertexShader->LoadShaderFile(L"NormalMapVertexShader.cso");
 
 }
 

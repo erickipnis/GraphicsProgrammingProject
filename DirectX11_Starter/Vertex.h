@@ -9,4 +9,5 @@ struct Vertex
 	XMFLOAT3 Position;
 	XMFLOAT3 Normal;
 	XMFLOAT2 UV;
+	XMFLOAT4 Tangent;
 };

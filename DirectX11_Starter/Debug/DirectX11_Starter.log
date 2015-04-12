@@ -1,22 +1,16 @@
-﻿Build started 4/8/2015 8:31:53 PM.
-     1>Project "\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
+﻿Build started 4/12/2015 2:59:21 PM.
+     1>Project "C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/include/" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D HAS_DIRECTXTK /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt GameEntity.cpp Mesh.cpp MyDemoGame.cpp Ship.cpp
-         Mesh.cpp
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mesh.cpp(180): warning C4018: '<' : signed/unsigned mismatch
-         Generating Code...
-         Compiling...
-         Ship.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/include/" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D HAS_DIRECTXTK /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
          MyDemoGame.cpp
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(98): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(106): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(338): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(395): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\esk8107\igmprofile\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(403): warning C4018: '<' : signed/unsigned mismatch
-         GameEntity.cpp
-         Generating Code...
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(103): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(111): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(208): warning C4101: 'creditSRV' : unreferenced local variable
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(396): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(453): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\eric kipnis\documents\visual studio 2013\projects\igme540\graphicsprogrammingproject\directx11_starter\mydemogame.cpp(461): warning C4018: '<' : signed/unsigned mismatch
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO "\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTKAudioDX.lib" "\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTK.lib" d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.lib" /MACHINE:X86 Debug\Camera.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO "C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTKAudioDX.lib" "C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTK.lib" d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.lib" /MACHINE:X86 Debug\Camera.obj
          Debug\Directional.obj
          Debug\Enemy.obj
          Debug\GameEntity.obj
@@ -33,9 +27,9 @@
          Debug\Point.obj
          Debug\Ship.obj
          Debug\SimpleShader.obj
-         DirectX11_Starter.vcxproj -> \\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.exe
-     1>Done Building Project "\\banner.main.ad.rit.edu\students\esk8107\IGMProfile\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
+         DirectX11_Starter.vcxproj -> C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\Debug\DirectX11_Starter.exe
+     1>Done Building Project "C:\Users\Eric Kipnis\Documents\Visual Studio 2013\Projects\IGME540\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:03:23.63
+Time Elapsed 00:00:03.40

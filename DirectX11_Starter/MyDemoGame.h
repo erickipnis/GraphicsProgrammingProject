@@ -89,7 +89,9 @@ private:
 
 	// SimpleShaders
 	SimplePixelShader* pixelShader;
+	SimplePixelShader* normalMapPixelShader;
 	SimpleVertexShader* vertexShader;
+	SimpleVertexShader* normalMapVertexShader;
 
 	// The camera
 	Camera* camera;

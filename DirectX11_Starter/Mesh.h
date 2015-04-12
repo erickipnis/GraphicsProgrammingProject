@@ -46,7 +46,7 @@ public:
 	ID3D11Buffer* GetIndexBuffer() { return mIndexBuffer; }
 	int GetIndexCount() { return mIndices; }
 
-	void CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, vector<XMFLOAT3> normalsVect, vector<XMFLOAT2> uvsVect, vector<Vertex> vertsVect, vector<UINT> indicesVect);
+	void CalculateTangents(int numVertices, vector<Vertex>* vertsVect);
 
 private:
 	ID3D11Buffer* mVertexBuffer;
