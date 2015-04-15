@@ -1,10 +1,11 @@
 #include "GridTile.h"
 
 
-GridTile::GridTile(XMFLOAT3 position)
+GridTile::GridTile(XMFLOAT3 position, Mesh* mesh, Material* material) 
+	: GameEntity(mesh, material)
 {
 	occupied = false;
-	mPosition = position;
+	SetPosition(position);
 }
 
 
@@ -20,9 +21,4 @@ bool GridTile::IsOccupied()
 void GridTile::setStatus(bool status)
 {
 	occupied = status;
-}
-
-XMFLOAT3 GridTile::GetPosition()
-{
-	return mPosition;
 }

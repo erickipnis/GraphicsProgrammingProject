@@ -4,8 +4,8 @@
 #include "DirectXGame.h"
 #include "Vertex.h"
 #include "Mesh.h"
-#include "Grid.h"
 #include "GameEntity.h"
+#include "Grid.h"
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Ship.h"
@@ -81,8 +81,15 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+<<<<<<< HEAD
 	Mesh* torpedo;
+=======
+	Mesh* tileMesh;
+	Mesh* startMenu;
+>>>>>>> 81be39ba99f243e662798afe343f4264948b9f95
 	Mesh* waterMesh;
+
+	GameEntity* startScreen;
 
 	// vector of entities
 	std::vector<GameEntity*> entities;
@@ -92,13 +99,21 @@ private:
 
 	// SimpleShaders
 	SimplePixelShader* pixelShader;
+	SimplePixelShader* normalMapPixelShader;
 	SimpleVertexShader* vertexShader;
+	SimpleVertexShader* normalMapVertexShader;
 
 	// The camera
 	Camera* camera;
 
 	// Materials
 	Material* material;
+	Material* tileMaterial;
+
+	Material* startDefaultMaterial;
+	Material* startStartMaterial;
+	Material* startInstructMaterial;
+	Material* startScoreMaterial;
 	Material* waterMaterial;
 
 	// Lighting
