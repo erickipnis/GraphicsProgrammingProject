@@ -214,7 +214,7 @@ void Mesh::CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, ve
 		XMFLOAT3 tDirection = XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
 	}
 
-	for (j = 0; j < numVertices; j++)
+	for (int j = 0; j < numVertices; j++)
 	{
 		XMFLOAT3 n = normalsVect[j];
 		XMFLOAT3 t = tan1[j];

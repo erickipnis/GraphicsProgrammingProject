@@ -8,6 +8,8 @@ GameEntity::GameEntity(Mesh* mesh, Material* material)
 	mRotation = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	mScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 	XMStoreFloat4x4(&mWorldMatrix, XMMatrixTranspose(XMMatrixIdentity()));
+
+	mBoundingBox = mMesh->GetBoundingBox();
 }
 
 GameEntity::~GameEntity()
@@ -60,6 +62,8 @@ void GameEntity::Update()
 	XMMATRIX world = scale * rotation * translate;
 
 	XMStoreFloat4x4(&mWorldMatrix, XMMatrixTranspose(world));
+
+	mBoundingBox.Update(mWorldMatrix);
 }
 void GameEntity::Translate(XMFLOAT3 offset)
 {
