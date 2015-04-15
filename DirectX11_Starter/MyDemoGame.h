@@ -9,6 +9,11 @@
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Ship.h"
+#include "Player.h"
+#include "Enemy.h"
+#include <time.h>       /* time */
+#include <SpriteFont.h>
+#include <SpriteBatch.h>
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -76,8 +81,15 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+	Mesh* torpedo;
+=======
+>>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
 	Mesh* tileMesh;
 	Mesh* startMenu;
+>>>>>>> 81be39ba99f243e662798afe343f4264948b9f95
 	Mesh* waterMesh;
 
 	GameEntity* startScreen;
@@ -90,7 +102,9 @@ private:
 
 	// SimpleShaders
 	SimplePixelShader* pixelShader;
+	SimplePixelShader* normalMapPixelShader;
 	SimpleVertexShader* vertexShader;
+	SimpleVertexShader* normalMapVertexShader;
 
 	// The camera
 	Camera* camera;
@@ -98,11 +112,19 @@ private:
 	// Materials
 	Material* material;
 	Material* tileMaterial;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
 	// Lighting
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
@@ -114,4 +136,13 @@ private:
 
 	// Grid
 	Grid* grid;
+
+	//Player - will have ships, health, resources, etc. 
+	Player player;
+
+	//Enemy - will have ships, spawn rate, etc. 
+	Enemy enemy;
+
+	std::unique_ptr<DirectX::SpriteFont> m_font;
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };

@@ -136,6 +136,9 @@ Mesh::Mesh(char* file, ID3D11Device* device)
 	// Close
 	obj.close();
 
+	// Calculate the tangent of each vertex and store it in each vertex's tangent 
+	CalculateTangents(triangleCounter, &verts);
+
 	// - At this point, "verts" is a vector of Vertex structs, and can be used
 	//    directly to create a vertex buffer:  &verts[0] is the first vert
 	// - The vector "indices" is similar. It's a vector of unsigned ints and
@@ -178,7 +181,7 @@ Mesh::~Mesh()
 	ReleaseMacro(mIndexBuffer);
 }
 
-void Mesh::CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, vector<XMFLOAT3> normalsVect, vector<XMFLOAT2> uvsVect, vector<Vertex> vertsVect, vector<UINT> indicesVect)
+void Mesh::CalculateTangents(int numVertices, vector<Vertex>* vertsVect)
 {
 	XMFLOAT3* tan1 = new XMFLOAT3[numVertices * 2];
 	XMFLOAT3* tan2 = tan1 + numVertices;
@@ -187,9 +190,9 @@ void Mesh::CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, ve
 	for (unsigned int i = 0; i < numVertices; i += 3)
 	{
 		// Get the three vertices that make up a triangle
-		Vertex v1 = vertsVect[i];
-		Vertex v2 = vertsVect[i + 1];
-		Vertex v3 = vertsVect[i + 2];
+		Vertex v1 = vertsVect->at(i);
+		Vertex v2 = vertsVect->at(i + 1);
+		Vertex v3 = vertsVect->at(i + 2);
 
 		// Get the three texture coordinates associated with the triangle
 		XMFLOAT2 w1 = v1.UV;
@@ -212,23 +215,56 @@ void Mesh::CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, ve
 
 		XMFLOAT3 sDirection = XMFLOAT3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
 		XMFLOAT3 tDirection = XMFLOAT3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r, (s1 * z2 - s2 * z1) * r);
+
+		tan1[i] = XMFLOAT3(tan1[i].x + sDirection.x, tan1[i].y + sDirection.y, tan1[i].z + sDirection.z);
+		tan1[i + 1] = XMFLOAT3(tan1[i + 1].x + sDirection.x, tan1[i + 1].y + sDirection.y, tan1[i + 1].z + sDirection.z);
+		tan1[i + 2] = XMFLOAT3(tan1[i + 2].x + sDirection.x, tan1[i + 2].y + sDirection.y, tan1[i + 2].z + sDirection.z);
+
+		tan2[i] = XMFLOAT3(tan2[i].x + tDirection.x, tan2[i].y + tDirection.y, tan2[i].z + tDirection.z);
+		tan2[i + 1] = XMFLOAT3(tan2[i + 1].x + tDirection.x, tan2[i + 1].y + tDirection.y, tan2[i + 1].z + tDirection.z);
+		tan2[i + 2] = XMFLOAT3(tan2[i + 2].x + tDirection.x, tan2[i + 2].y + tDirection.y, tan2[i + 2].z + tDirection.z);
 	}
 
+<<<<<<< HEAD
 	for (int j = 0; j < numVertices; j++)
+=======
+	for (unsigned int j = 0; j < numVertices; j++)
+>>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
 	{
-		XMFLOAT3 n = normalsVect[j];
+		Vertex vertex = vertsVect->at(j);
+
+		XMFLOAT3 n = vertex.Normal;
 		XMFLOAT3 t = tan1[j];
 
-		//XMFLOAT4* tangent;
+		XMFLOAT4* tangent = new XMFLOAT4[numVertices];
+
+		XMVECTOR tangentVector = XMLoadFloat4(tangent);
+		XMVECTOR nVector = XMLoadFloat3(&n);
+		XMVECTOR tVector = XMLoadFloat3(&t);
+
+		XMVECTOR tan2Vector = XMLoadFloat3(&(tan2[j]));
 
 		// Gram-Schmidt Orthogonalize
-		// tangent[j] = (t - n * Dot(n, t)).Normalize();
+		tangentVector = XMVector4Normalize((tVector - nVector * XMVector4Dot(nVector, tVector)));
+		XMStoreFloat4(&(vertsVect->at(j).Tangent), tangentVector);
 
-		// Calculate handedness
-		// tangent[j].w = (Dot(Cross(n, t), tan2[j]) < 0.0f) ? -1.0f : 1.0f;
+		// Calculate (left or right) handedness
+		//tangentVector = XMVector3Dot(XMVector3Cross(nVector, tVector), tan2Vector);
+		
+		/*XMFLOAT3 tempTangent;
+		XMStoreFloat3(&tempTangent, tangentVector);*/
 
+	/*	if (tempTangent.w < 0.0f)
+		{
+			tempTangent.w = -1.0f;
+		}
+		else if (tempTangent.w >= 0.0f)
+		{
+			tempTangent.w = 1.0f;
+		}
+
+		vertsVect->at(j).Tangent.w = tempTangent.w;*/
 	}
 
 	delete[] tan1;
-	delete[] tan2;
 }

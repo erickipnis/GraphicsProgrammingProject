@@ -26,6 +26,7 @@ void GameEntity::Draw(ID3D11DeviceContext& device, Camera& camera)
 	SimpleVertexShader* vertexShader = mMaterial->GetVertexShader();
 	pixelShader->SetSamplerState("basicSampler", mMaterial->GetSamplerState());
 	pixelShader->SetShaderResourceView("diffuseTexture", mMaterial->GetSRV());
+
 	vertexShader->SetMatrix4x4("world", mWorldMatrix);
 	vertexShader->SetMatrix4x4("view", camera.GetViewMatrix());
 	vertexShader->SetMatrix4x4("projection", camera.GetProjectionMatrix());

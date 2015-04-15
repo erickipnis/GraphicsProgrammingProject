@@ -48,7 +48,7 @@ public:
 	int GetIndexCount() { return mIndices; }
 	BoundingBox GetBoundingBox() { return mBoundingBox; }
 
-	void CalculateTangents(int numVertices, vector<XMFLOAT3> positionsVect, vector<XMFLOAT3> normalsVect, vector<XMFLOAT2> uvsVect, vector<Vertex> vertsVect, vector<UINT> indicesVect);
+	void CalculateTangents(int numVertices, vector<Vertex>* vertsVect);
 
 private:
 	ID3D11Buffer* mVertexBuffer;
