@@ -18,6 +18,7 @@ struct DirectionalLight
 
 cbuffer light : register(b0)
 {
+	float time;
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
 };
@@ -35,15 +36,33 @@ float4 main(VertexToPixel input) : SV_TARGET
 	//   is interpolated for each pixel between the corresponding 
 	//   vertices of the triangle
 
+	float2 scrollUV1 = input.uv;
+	float2 scrollUV2 = input.uv;
+
+	float scaledTime = time * 0.01;
+
+	scrollUV1.x += scaledTime;
+	scrollUV1.y += scaledTime;
+	
+	scrollUV2.x += scaledTime;
+	scrollUV2.y -= scaledTime;
+
 	input.normal = normalize(input.normal);
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 
-	float4 waterNormalFromTexture = waterNormalMap.Sample(basicSampler, input.uv);
+	float4 waterNormalFromTexture = waterNormalMap.Sample(basicSampler, scrollUV1);
+	float4 waterNormalFromTextureScaled = waterNormalMap.Sample(basicSampler, scrollUV2 * 1.25);
 
 	// Unpack normal from water normal map texture sample
 	float3 unpackedWaterNormal = (float3)(waterNormalFromTexture * 2.0f - 1.0f);
+	float3 unpackedWaterNormalScaled = (float3)(waterNormalFromTextureScaled * 2.0f - 1.0f);
+
+	unpackedWaterNormal += unpackedWaterNormalScaled;
+	unpackedWaterNormal /= 2;
 
 	float3 N = normalize(input.normal);
+
+	//input.tangent.x += 1;
 
 	float3 T = float3(input.tangent.x, input.tangent.y, input.tangent.z);
 	T = normalize(T - dot(T, N) * N);

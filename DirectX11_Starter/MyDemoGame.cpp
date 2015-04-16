@@ -446,6 +446,8 @@ void MyDemoGame::UpdateScene(float dt)
 
 			break;
 	}
+
+	normalMapPixelShader->SetFloat("time", this->timer.TotalTime());
 }
 
 // Clear the screen, redraw everything, present
