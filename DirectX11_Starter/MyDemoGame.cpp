@@ -335,24 +335,12 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	mesh3 = new Mesh("Boat.obj", device);
 
-<<<<<<< HEAD
-=======
 	torpedo = new Mesh("Torpedo.obj", device);
 
 	tileMesh = new Mesh("tile.obj", device);
-	startMenu = new Mesh(vertices, 4, indices, 6, device);
-
-	waterMesh = new Mesh("plain.obj", device);
-
-
->>>>>>> e418d8489c2ebdabaf5f3d9b9efc44c507e43703
-	tileMesh = new Mesh("tile.obj", device);
-
 	//startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
-
-
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -476,10 +464,6 @@ void MyDemoGame::UpdateScene(float dt)
 			//update player ships
 			for (int i = 0; i < player.ships.size(); i++)
 			{
-<<<<<<< HEAD
-				ships[i]->shipEntity->Translate(XMFLOAT3(ships[i]->speed * dt, 0.0f, 0.0f));
-				ships[i]->shipEntity->Update();
-=======
 				//shooting
 				player.ships[i]->projectileTimer += 1;
 				if (player.ships[i]->projectileTimer > 1 / dt)
@@ -520,7 +504,6 @@ void MyDemoGame::UpdateScene(float dt)
 				{
 					enemy.ships.erase(enemy.ships.begin() + i);
 				}
->>>>>>> e418d8489c2ebdabaf5f3d9b9efc44c507e43703
 			}
 			camera->Update();
 			break;
