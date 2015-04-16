@@ -115,6 +115,7 @@ private:
 	enum GameState { Start, Game, Paused, Over };
 	GameState state;
 	bool pauseKeyDown;
+	bool mouseDown;
 
 	// Grid
 	Grid* grid;

@@ -233,7 +233,7 @@ bool MyDemoGame::Init()
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureDefault.png", 0, &defaultSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureStart.png", 0, &startSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureInstructions.png", 0, &instructSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureScore.png", 0, &scoreSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureScores.png", 0, &scoreSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water-normal-map.png", 0, &waterNormalMapSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
@@ -249,9 +249,9 @@ bool MyDemoGame::Init()
 
 	// Create the game entities
 	startScreen = new GameEntity(waterMesh, startDefaultMaterial);
-	startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.1f));
-	//startScreen->SetRotation(XMFLOAT3(3.1416f/2.0f, 0.0f, 0.0f));
-	startScreen->SetScale(XMFLOAT3(1.77f, 1.0f, 1.15f));
+	startScreen->SetPosition(XMFLOAT3(0.0f, -5.0f, 2.0f));
+	startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
+	startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
 	startScreen->Update();
 	//entities.push_back(new GameEntity(mesh1, material));
 	entities.push_back(new GameEntity(mesh2, material));
@@ -334,10 +334,9 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	mesh3 = new Mesh("Boat.obj", device);
 
-
 	tileMesh = new Mesh("tile.obj", device);
 
-	startMenu = new Mesh(vertices, 4, indices, 6, device);
+	//startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
 
@@ -396,7 +395,41 @@ void MyDemoGame::UpdateScene(float dt)
 	switch (state)
 	{
 		case Start:
-			//if (prevMousePos.x < )
+			if (prevMousePos.x > 404 && prevMousePos.x < 872)
+			{
+				if (prevMousePos.y > 215 && prevMousePos.y < 318)
+				{
+					startScreen = new GameEntity(waterMesh, startStartMaterial);
+					if (mouseDown)
+					{
+						state = Game;
+					}
+				}
+				else if (prevMousePos.y > 355 && prevMousePos.y < 458)
+				{
+					startScreen = new GameEntity(waterMesh, startInstructMaterial);
+				}
+				else if (prevMousePos.y > 495 && prevMousePos.y < 598)
+				{
+					startScreen = new GameEntity(waterMesh, startScoreMaterial);
+				}
+				else
+				{
+					startScreen = new GameEntity(waterMesh, startDefaultMaterial);
+				}
+				startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 2.0f));
+				startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
+				startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
+				startScreen->Update();
+			}
+			else
+			{
+				startScreen = new GameEntity(waterMesh, startDefaultMaterial);
+				startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 2.0f));
+				startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
+				startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
+				startScreen->Update();
+			}
 			break;
 
 		case Game:
@@ -423,7 +456,6 @@ void MyDemoGame::UpdateScene(float dt)
 				ships[i]->shipEntity->Translate(XMFLOAT3(ships[i]->speed * dt, 0.0f, 0.0f));
 				ships[i]->shipEntity->Update();
 			}
-
 			camera->Update();
 			break;
 
@@ -514,15 +546,14 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
+	mouseDown = true;
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
 	float pointX = (2.0f *  (float)x / (float)1280) - 1.0f;
 	float pointY = (2.0f *  (float)y / (float)720) - 1.0f;
 
-
 	SetCapture(hMainWnd);
-
 
 	GridTile* closest = grid->GetNearestTile(prevMousePos.x, prevMousePos.y, 1280, 720, camera);
 	XMFLOAT3 shipPos = closest->GetPosition();
@@ -541,15 +572,19 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
 {
+	mouseDown = false;
 	ReleaseCapture();
-	if (state == Start)
-	{
-		state = Game;
-	}
+	//if (state == Start)
+	//{
+	//	state = Game;
+	//}
 }
 
 void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 {
+	prevMousePos.x = x;
+	prevMousePos.y = y;
+
 	int xDif = x - prevMousePos.x;
 	int yDif = y - prevMousePos.y;
 
