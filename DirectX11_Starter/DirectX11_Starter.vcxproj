@@ -84,6 +84,7 @@
     <ClCompile Include="GameTimer.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Projectile.cpp" />
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
   </ItemGroup>
@@ -104,6 +105,7 @@
     <ClInclude Include="GameTimer.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="Projectile.h" />
     <ClInclude Include="Ship.h" />
     <ClInclude Include="SimpleShader.h" />
     <ClInclude Include="Vertex.h" />
@@ -124,6 +126,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="MakeSpriteFont.exe" />
+    <None Include="MakeSpriteFont.pdb" />
+    <None Include="myfile.spritefont" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

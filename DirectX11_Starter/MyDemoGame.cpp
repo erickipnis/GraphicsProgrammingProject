@@ -164,6 +164,9 @@ MyDemoGame::~MyDemoGame()
 // sets up our geometry and loads the shaders (among other things)
 bool MyDemoGame::Init()
 {
+	/* initialize random seed: */
+	srand(time(NULL));
+
 	// Initialize Lights
 	directionalLight.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -225,6 +228,7 @@ bool MyDemoGame::Init()
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
 
+
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"tile2.png", 0, &tileSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
@@ -253,25 +257,13 @@ bool MyDemoGame::Init()
 	startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
 	startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
 	startScreen->Update();
-	//entities.push_back(new GameEntity(mesh1, material));
+		// Create the game entities
 	entities.push_back(new GameEntity(mesh2, material));
-	//entities.push_back(new GameEntity(tileMesh, tileMaterial));
-	//entities.push_back(new GameEntity(mesh3, material));
 	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
-	//entities[1]->SetPosition(XMFLOAT3(0.0f, -1.0f, 1.0f));
-	//entities[2]->SetPosition(XMFLOAT3(-1.0f, -2.0f, 0.0f));
-	//entities[3]->SetPosition(XMFLOAT3(-3.0f, -1.0f, 5.0f));
+	entities[0]->Update();
 
-	// Push the water Game Entity
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
 	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
-
-	//create the ships
-	//ships.push_back(new Ship(entities[0]));
-	//ships.push_back(new Ship(entities[1]));
-
-	//ships[0]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
-	//ships[1]->shipEntity->SetPosition(XMFLOAT3(-5.0f, -2.0f, 0.0f));
 
 	// Load pixel & vertex shaders, and then create an input layout
 	LoadShadersAndInputLayout();
@@ -307,6 +299,15 @@ bool MyDemoGame::Init()
 	// Set up the grid
 	grid = new Grid(6, 10, 1.0f, XMFLOAT3(-4.5f, 0.0f, -0.5f), tileMesh, tileMaterial);
 
+	//Make the player
+	player = Player();
+
+	//Make the enemy class
+	enemy = Enemy();
+
+	m_font.reset(new SpriteFont(device, L"myfile.spritefont"));
+	m_spriteBatch.reset(new SpriteBatch(deviceContext));
+
 	//make sure we draw tris correctly
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -334,11 +335,23 @@ void MyDemoGame::CreateGeometryBuffers()
 
 	mesh3 = new Mesh("Boat.obj", device);
 
+<<<<<<< HEAD
+=======
+	torpedo = new Mesh("Torpedo.obj", device);
+
+	tileMesh = new Mesh("tile.obj", device);
+	startMenu = new Mesh(vertices, 4, indices, 6, device);
+
+	waterMesh = new Mesh("plain.obj", device);
+
+
+>>>>>>> e418d8489c2ebdabaf5f3d9b9efc44c507e43703
 	tileMesh = new Mesh("tile.obj", device);
 
 	//startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
+
 
 }
 
@@ -446,15 +459,68 @@ void MyDemoGame::UpdateScene(float dt)
 				pauseKeyDown = false;
 			}
 			// Take input, update game logic, etc.
-			if (GetAsyncKeyState('M'))
+			enemy.spawnTimer++;
+			if (enemy.spawnTimer > 1 / dt)
 			{
-				ships[0]->shipEntity->Translate(XMFLOAT3(1.0f * dt, 0.0f, 0.0f));
-				ships[0]->shipEntity->Update();
+				entities.push_back(new GameEntity(mesh3, material));
+				enemy.ships.push_back(new Ship(entities[entities.size() - 1]));
+
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetPosition(XMFLOAT3(4, 0.0f, rand() % 6 - 2));
+				enemy.ships[enemy.ships.size() - 1]->speed = -1;
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->Update();
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, -1.57f, 0.0f));
+
+				enemy.spawnTimer = 0;
 			}
-			for (int i = 0; i < ships.size(); i++)
+			//update player ships
+			for (int i = 0; i < player.ships.size(); i++)
 			{
+<<<<<<< HEAD
 				ships[i]->shipEntity->Translate(XMFLOAT3(ships[i]->speed * dt, 0.0f, 0.0f));
 				ships[i]->shipEntity->Update();
+=======
+				//shooting
+				player.ships[i]->projectileTimer += 1;
+				if (player.ships[i]->projectileTimer > 1 / dt)
+				{
+					entities.push_back(new GameEntity(torpedo, material));
+					player.ships[i]->projectiles.push_back(new Projectile(entities[entities.size() - 1]));
+					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetPosition(player.ships[i]->shipEntity->GetPosition());
+					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->speed = 4;
+					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetRotation(XMFLOAT3(0.0f, 0.0f, -1.57f));
+					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->Update();
+
+					player.ships[i]->projectileTimer = 0;
+				}
+
+				//update mesh
+				player.ships[i]->shipEntity->Update();
+				//update bullets
+				for (int j = 0; j < player.ships[i]->projectiles.size(); j++)
+				{
+					player.ships[i]->projectiles[j]->projectileEntity->Translate(XMFLOAT3(player.ships[i]->projectiles[j]->speed * dt, 0.0f, 0.0f));
+					player.ships[i]->projectiles[j]->projectileEntity->Update();
+
+					//delete if off screen
+					if (player.ships[i]->projectiles[j]->projectileEntity->GetPosition().x > 8)
+					{
+						//delete player.ships[i]->projectiles[j];
+						player.ships[i]->projectiles.erase(player.ships[i]->projectiles.begin() + j);
+					}
+				}
+			}
+			//update enemy ships
+			for (int i = 0; i < enemy.ships.size(); i++)
+			{
+				enemy.ships[i]->shipEntity->Translate(XMFLOAT3(enemy.ships[i]->speed * dt, 0.0f, 0.0f));
+				enemy.ships[i]->shipEntity->Update();
+				if (enemy.ships[i]->shipEntity->GetPosition().x < -6)
+				{
+					enemy.ships.erase(enemy.ships.begin() + i);
+				}
+>>>>>>> e418d8489c2ebdabaf5f3d9b9efc44c507e43703
 			}
 			camera->Update();
 			break;
@@ -510,11 +576,31 @@ void MyDemoGame::DrawScene()
 
 		grid->Draw(*deviceContext, *camera);
 
-		for (int i = 0; i < entities.size(); i++)
+		//draw water and base
+		entities[0]->Draw(*deviceContext, *camera);
+		entities[1]->Draw(*deviceContext, *camera);
+		//draw all of the player ships
+		for (int i = 0; i < player.ships.size(); i++)
 		{
-			entities[i]->Draw(*deviceContext, *camera);
+			player.ships[i]->shipEntity->Draw(*deviceContext, *camera);
 		}
-
+		//draw all of the projectiles
+		for (int i = 0; i < player.ships.size(); i++)
+		{
+			for (int j = 0; j < player.ships[i]->projectiles.size(); j++)
+			{
+				player.ships[i]->projectiles[j]->projectileEntity->Draw(*deviceContext, *camera);
+			}
+		}
+		//draw all of the enemy ships
+		for (int i = 0; i < enemy.ships.size(); i++)
+		{
+			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera);
+		}
+		//text
+		m_spriteBatch->Begin();
+		m_font->DrawString(m_spriteBatch.get(), L"Ships Left:", XMFLOAT2(0, 0));
+		m_spriteBatch->End();
 		break;
 
 	case Paused:
@@ -560,13 +646,14 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 
 	//make a new ship
 	entities.push_back(new GameEntity(mesh3, material));
-	ships.push_back(new Ship(entities[entities.size() - 1]));
+	player.ships.push_back(new Ship(entities[entities.size() - 1]));
 
-	ships[ships.size() - 1]->shipEntity->SetPosition(shipPos);
-	ships[ships.size() - 1]->speed = 1;
-	ships[ships.size() - 1]->shipEntity->Update();
-	ships[ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-	ships[ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+	player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+	player.ships[player.ships.size() - 1]->speed = 0;
+	player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+	player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+	player.numShips--;
+	player.ships[player.ships.size() - 1]->shipEntity->Update();
 
 }
 
