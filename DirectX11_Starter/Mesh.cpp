@@ -225,11 +225,7 @@ void Mesh::CalculateTangents(int numVertices, vector<Vertex>* vertsVect)
 		tan2[i + 2] = XMFLOAT3(tan2[i + 2].x + tDirection.x, tan2[i + 2].y + tDirection.y, tan2[i + 2].z + tDirection.z);
 	}
 
-<<<<<<< HEAD
-	for (int j = 0; j < numVertices; j++)
-=======
 	for (unsigned int j = 0; j < numVertices; j++)
->>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
 	{
 		Vertex vertex = vertsVect->at(j);
 

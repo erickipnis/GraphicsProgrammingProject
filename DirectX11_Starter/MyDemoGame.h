@@ -81,15 +81,12 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
+
 	Mesh* torpedo;
-=======
->>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
+
 	Mesh* tileMesh;
 	Mesh* startMenu;
->>>>>>> 81be39ba99f243e662798afe343f4264948b9f95
+
 	Mesh* waterMesh;
 
 	GameEntity* startScreen;
@@ -112,19 +109,17 @@ private:
 	// Materials
 	Material* material;
 	Material* tileMaterial;
-<<<<<<< HEAD
-=======
 
->>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
+
+
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
-<<<<<<< HEAD
-=======
 
->>>>>>> 7fbc3cfa5bb5baae74b988c351707b2913e5ca03
+
+
 	// Lighting
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
