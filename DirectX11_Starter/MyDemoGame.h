@@ -9,6 +9,11 @@
 #include "WICTextureLoader.h"
 #include <vector>
 #include "Ship.h"
+#include "Player.h"
+#include "Enemy.h"
+#include <time.h>       /* time */
+#include <SpriteFont.h>
+#include <SpriteBatch.h>
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -76,8 +81,12 @@ private:
 	Mesh* mesh1;
 	Mesh* mesh2;
 	Mesh* mesh3;
+
+	Mesh* torpedo;
+
 	Mesh* tileMesh;
 	Mesh* startMenu;
+
 	Mesh* waterMesh;
 
 	GameEntity* startScreen;
@@ -101,11 +110,15 @@ private:
 	Material* material;
 	Material* tileMaterial;
 
+
+
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
+
+
 
 	// Lighting
 	DirectionalLight directionalLight;
@@ -115,7 +128,17 @@ private:
 	enum GameState { Start, Game, Paused, Over };
 	GameState state;
 	bool pauseKeyDown;
+	bool mouseDown;
 
 	// Grid
 	Grid* grid;
+
+	//Player - will have ships, health, resources, etc. 
+	Player player;
+
+	//Enemy - will have ships, spawn rate, etc. 
+	Enemy enemy;
+
+	std::unique_ptr<DirectX::SpriteFont> m_font;
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };

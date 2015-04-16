@@ -47,6 +47,8 @@ private:
 	Mesh* mMesh;
 	Material* mMaterial;
 
+	BoundingBox mBoundingBox;
+
 public:
 	GameEntity(Mesh* mesh, Material* material);
 	~GameEntity();
@@ -56,6 +58,7 @@ public:
 	XMFLOAT3 GetRotation() { return mRotation; }
 	XMFLOAT3 GetScale() { return mScale; }
 	XMFLOAT4X4 GetWorldMatrix() { return mWorldMatrix; }
+	BoundingBox GetBoundingBox() { return mBoundingBox; }
 
 	// Set methods
 	void SetPosition(XMFLOAT3 position) { mPosition = position; }

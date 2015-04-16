@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameEntity.h"
+#include "Projectile.h"
 
 class Ship
 {
@@ -10,5 +11,9 @@ public:
 
 	int health;
 	int speed;
+	int projectileTimer;
 	GameEntity* shipEntity;
+
+	//vector of projectiles
+	std::vector<Projectile*> projectiles;
 };

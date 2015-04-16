@@ -3,6 +3,7 @@
 
 Enemy::Enemy()
 {
+	spawnTimer = 0;
 }
 
 

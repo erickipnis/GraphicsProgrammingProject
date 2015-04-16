@@ -1,4 +1,6 @@
 #pragma once
+#include "Ship.h"
+#include <vector>
 class Player
 {
 public:
@@ -11,7 +13,11 @@ public:
 	int materials;
 	int score;
 
+	//vector of ships
+	std::vector<Ship*> ships;
+
 private:
+	void Shoot();
 
 };
 

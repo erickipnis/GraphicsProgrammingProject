@@ -46,6 +46,7 @@ public:
 	ID3D11Buffer* GetVertexBuffer() { return mVertexBuffer; }
 	ID3D11Buffer* GetIndexBuffer() { return mIndexBuffer; }
 	int GetIndexCount() { return mIndices; }
+	BoundingBox GetBoundingBox() { return mBoundingBox; }
 
 	void CalculateTangents(int numVertices, vector<Vertex>* vertsVect);
 
