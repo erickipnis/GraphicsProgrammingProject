@@ -27,7 +27,7 @@ Grid::Grid(int rows, int columns, float size, XMFLOAT3 offset, Mesh* mesh, Mater
 		}
 	}
 
-
+	lastIndexUsed = 0;
 }
 
 
@@ -94,6 +94,7 @@ GridTile* Grid::GetNearestTile(float xPos, float yPos, int screenWidth, int scre
 			index = i;
 		}
 	}
+	lastIndexUsed = index;
 	return tiles[index];
 }
 
@@ -103,6 +104,11 @@ void Grid::Draw(ID3D11DeviceContext& device, Camera& camera)
 	{
 		tiles[i]->Draw(device, camera);
 	}
+}
+
+GridTile Grid::getTile(int i)
+{
+	return *tiles[i];
 }
 
 

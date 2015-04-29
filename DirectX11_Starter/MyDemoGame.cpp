@@ -154,6 +154,24 @@ MyDemoGame::~MyDemoGame()
 		delete grid;
 		grid = nullptr;
 	}
+
+	
+
+	//delete skybox stuff
+	/*
+	sphereIndexBuffer->Release();
+	sphereVertBuffer->Release();
+
+	SKYMAP_VS->Release();
+	SKYMAP_PS->Release();
+	SKYMAP_VS_Buffer->Release();
+	SKYMAP_PS_Buffer->Release();
+
+	smrv->Release();
+
+	DSLessEqual->Release();
+	RSCullNone->Release();
+	*/
 }
 
 #pragma endregion
@@ -218,9 +236,21 @@ bool MyDemoGame::Init()
 	ID3D11ShaderResourceView* waterNormalMapSRV;
 	ID3D11ShaderResourceView* defaultSRV;
 	ID3D11ShaderResourceView* startSRV;
+	ID3D11ShaderResourceView* overSRV;
 	ID3D11ShaderResourceView* instructSRV;
 	ID3D11ShaderResourceView* scoreSRV;
 	ID3D11ShaderResourceView* creditSRV;
+
+	ID3D11ShaderResourceView* assaultSRV;
+	ID3D11ShaderResourceView* battleshipSRV;
+	ID3D11ShaderResourceView* submarineSRV;
+	ID3D11ShaderResourceView* enemySRV;
+
+	ID3D11ShaderResourceView* bulletSRV;
+	ID3D11ShaderResourceView* torpedoSRV;
+	ID3D11ShaderResourceView* baseSRV;
+	ID3D11ShaderResourceView* mineSRV;
+
 
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
@@ -228,20 +258,56 @@ bool MyDemoGame::Init()
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
 
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"AssualtBoat.png", 0, &assaultSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"SubUV.png", 0, &submarineSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BattleshipUV.png", 0, &battleshipSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatEnemyUV.png", 0, &enemySRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BulletUV.png", 0, &bulletSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"TorpedoUV.png", 0, &torpedoSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BaseUV.png", 0, &baseSRV);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MineUV.png", 0, &mineSRV);
+
+
+
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"tile2.png", 0, &tileSRV);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 	tileMaterial = new Material(pixelShader, vertexShader, tileSRV, samplerState);
+	assaultMaterial = new Material(pixelShader, vertexShader, assaultSRV, samplerState);
+	subMaterial = new Material(pixelShader, vertexShader,submarineSRV, samplerState);
+	battleMaterial = new Material(pixelShader, vertexShader, battleshipSRV, samplerState);
+	enemyMaterial = new Material(pixelShader, vertexShader, enemySRV, samplerState);
 
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureDefault.png", 0, &defaultSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureStart.png", 0, &startSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureInstructions.png", 0, &instructSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"StartScreenTextureScores.png", 0, &scoreSRV);
+	bulletMaterial = new Material(pixelShader, vertexShader, bulletSRV, samplerState);
+	torpedoMaterial = new Material(pixelShader, vertexShader, torpedoSRV, samplerState);
+	baseMaterial = new Material(pixelShader, vertexShader, baseSRV, samplerState);
+	mineMaterial = new Material(pixelShader, vertexShader, mineSRV, samplerState);
+
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu.png", 0, &defaultSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu_Start.png", 0, &startSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu_Instructions.png", 0, &instructSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu_Scores.png", 0, &scoreSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"GameOverScreen.png", 0, &overSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water-normal-map.png", 0, &waterNormalMapSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleNormal.jpg", 0, &waterNormalMapSRV);
+
+	//skybox
+	
+	//DirectX::CreateWICTextureFromFileEx(device, deviceContext, L"Effects.fx", 0, 0, "SKYMAP_VS", "vs_4_0", 0, 0, 0, &SKYMAP_VS_Buffer, 0, 0);
+	//DirectX::CreateWICTextureFromFile(device, deviceContextL"Effects.fx", 0, 0, "SKYMAP_PS", "ps_4_0", 0, 0, 0, &SKYMAP_PS_Buffer, 0, 0);
+
+	//device->CreateVertexShader(SKYMAP_VS_Buffer->GetBufferPointer(), SKYMAP_VS_Buffer->GetBufferSize(), NULL, &SKYMAP_VS);
+	//device->CreatePixelShader(SKYMAP_PS_Buffer->GetBufferPointer(), SKYMAP_PS_Buffer->GetBufferSize(), NULL, &SKYMAP_PS);
 
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 	waterMaterial = new Material(normalMapPixelShader, normalMapVertexShader, waterSRV, samplerState);
@@ -249,6 +315,7 @@ bool MyDemoGame::Init()
 	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
 	startScoreMaterial = new Material(pixelShader, vertexShader, scoreSRV, samplerState);
+	gameOverMaterial = new Material(pixelShader, vertexShader, overSRV, samplerState);
 
 
 	// Create the game entities
@@ -257,13 +324,28 @@ bool MyDemoGame::Init()
 	startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
 	startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
 	startScreen->Update();
-		// Create the game entities
-	entities.push_back(new GameEntity(mesh2, material));
-	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
+
+
+	// Create the static game entities
+
+	//base
+	entities.push_back(new GameEntity(base, baseMaterial));
+	entities[0]->SetPosition(XMFLOAT3(-6.0f, 0.f, 2.5f));
+	entities[0]->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+	entities[0]->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
 	entities[0]->Update();
 
+	//water
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
 	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
+	entities[1]->SetScale(XMFLOAT3(2, 2, 2));
+	entities[1]->Update();
+
+	//placement ship
+	entities.push_back(new GameEntity(assaultBoat, assaultMaterial));
+	entities[2]->SetRotation(XMFLOAT3(0.0f, 3.14f, 0.0f));
+	entities[2]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
+	entities[2]->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
 
 	// Load pixel & vertex shaders, and then create an input layout
 	LoadShadersAndInputLayout();
@@ -311,6 +393,10 @@ bool MyDemoGame::Init()
 	//make sure we draw tris correctly
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+
+	//skybox stuff
+	CreateSphere(10, 10);
+
 	// Successfully initialized
 	return true;
 }
@@ -328,19 +414,34 @@ void MyDemoGame::CreateGeometryBuffers()
 	};
 
 	UINT indices[] = { 0, 1, 2, 2, 3, 0 };
-	//mesh1 = new Mesh(vertices, 4, indices, 6, device);
+
+	//Make all the meshes
 	mesh1 = new Mesh("sphere.obj", device);
 
 	mesh2 = new Mesh("cube.obj", device);
 
 	mesh3 = new Mesh("Boat.obj", device);
 
+	enemyBoat = new Mesh("BoatNew.obj", device);
+
+	battleship = new Mesh("Battleship.obj", device);
+
+	submarine = new Mesh("Sub.obj", device);
+
+	assaultBoat = new Mesh("Assault.obj", device);
+
 	torpedo = new Mesh("Torpedo.obj", device);
+
+	bullet = new Mesh("Bullet.obj", device);
 
 	tileMesh = new Mesh("tile.obj", device);
 	//startMenu = new Mesh(vertices, 4, indices, 6, device);
 
 	waterMesh = new Mesh("plain.obj", device);
+
+	base = new Mesh("Base.obj", device);
+
+	mine = new Mesh("Mine.obj", device);
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -396,9 +497,9 @@ void MyDemoGame::UpdateScene(float dt)
 	switch (state)
 	{
 		case Start:
-			if (prevMousePos.x > 404 && prevMousePos.x < 872)
+			if (prevMousePos.x > 0 && prevMousePos.x < 640)
 			{
-				if (prevMousePos.y > 215 && prevMousePos.y < 318)
+				if (prevMousePos.y > 170 && prevMousePos.y < 245)
 				{
 					startScreen = new GameEntity(waterMesh, startStartMaterial);
 					if (mouseDown)
@@ -406,11 +507,11 @@ void MyDemoGame::UpdateScene(float dt)
 						state = Game;
 					}
 				}
-				else if (prevMousePos.y > 355 && prevMousePos.y < 458)
+				else if (prevMousePos.y > 325 && prevMousePos.y < 400)
 				{
 					startScreen = new GameEntity(waterMesh, startInstructMaterial);
 				}
-				else if (prevMousePos.y > 495 && prevMousePos.y < 598)
+				else if (prevMousePos.y > 480 && prevMousePos.y < 555)
 				{
 					startScreen = new GameEntity(waterMesh, startScoreMaterial);
 				}
@@ -442,42 +543,105 @@ void MyDemoGame::UpdateScene(float dt)
 				}
 				pauseKeyDown = true;
 			}
+			if (GetAsyncKeyState('1') && 0x8000)
+			{
+				player.currentShip = 'a';
+				player.nextShipCost = 5;
+				entities[2]->setMesh(assaultBoat);
+				entities[2]->setMaterial(assaultMaterial);
+				entities[2]->SetRotation(XMFLOAT3(0.0f, 3.14f, 0.0f));
+			}
+			if (GetAsyncKeyState('2') && 0x8000)
+			{
+				player.currentShip = 's';
+				player.nextShipCost = 10;
+				entities[2]->setMesh(submarine);
+				entities[2]->setMaterial(subMaterial);
+				entities[2]->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+			}
+			if (GetAsyncKeyState('3') && 0x8000)
+			{
+				player.currentShip = 'b';
+				player.nextShipCost = 15;
+				entities[2]->setMesh(battleship);
+				entities[2]->setMaterial(battleMaterial);
+				entities[2]->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+			}if (GetAsyncKeyState('4') && 0x8000)
+			{
+				player.currentShip = 'm';
+				player.nextShipCost = 20;
+				entities[2]->setMesh(mine);
+				entities[2]->setMaterial(mineMaterial);
+				entities[2]->SetRotation(XMFLOAT3(0.0f, -1.57f, 0.0f));
+			}
 			else
 			{
 				pauseKeyDown = false;
 			}
 			// Take input, update game logic, etc.
 			enemy.spawnTimer++;
-			if (enemy.spawnTimer > 1 / dt)
+			if (enemy.kills >= enemy.killsForNextRound)
 			{
-				entities.push_back(new GameEntity(mesh3, material));
-				enemy.ships.push_back(new Ship(entities[entities.size() - 1]));
+				enemy.round++;
+				enemy.kills = 0;
+				enemy.killsForNextRound += 1;
+			}
 
-				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetPosition(XMFLOAT3(4, 0.0f, rand() % 6 - 2));
+			//update static entities
+			entities[2]->Update();
+
+			if (enemy.spawnTimer * enemy.round > 3 * (1 / dt))
+			{
+				float r = rand() % 6 + 1;
+				GridTile closest = grid->getTile(r * 10 - 1);
+				XMFLOAT3 shipPos = closest.GetPosition();
+
+				entities.push_back(new GameEntity(enemyBoat, enemyMaterial));
+				enemy.ships.push_back(new Ship(entities[entities.size() - 1], 'e'));
+
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->Translate(XMFLOAT3(2, 0, 0));
 				enemy.ships[enemy.ships.size() - 1]->speed = -1;
-				enemy.ships[enemy.ships.size() - 1]->shipEntity->Update();
-				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
 				enemy.ships[enemy.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, -1.57f, 0.0f));
+				enemy.ships[enemy.ships.size() - 1]->shipEntity->Update();
 
 				enemy.spawnTimer = 0;
 			}
 			//update player ships
 			for (int i = 0; i < player.ships.size(); i++)
 			{
-				//shooting
-				player.ships[i]->projectileTimer += 1;
-				if (player.ships[i]->projectileTimer > 1 / dt)
-				{
-					entities.push_back(new GameEntity(torpedo, material));
-					player.ships[i]->projectiles.push_back(new Projectile(entities[entities.size() - 1]));
-					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetPosition(player.ships[i]->shipEntity->GetPosition());
-					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->speed = 4;
-					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetRotation(XMFLOAT3(0.0f, 0.0f, -1.57f));
-					player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->Update();
+					//shooting
+					player.ships[i]->projectileTimer += 1;
+					if (player.ships[i]->projectileTimer > (1 / dt) * player.ships[i]->shootRate)
+					{
+						if (player.ships[i]->shipType != 'm')
+						{
+							if (player.ships[i]->shipType == 'a' || player.ships[i]->shipType == 'b')
+							{
+								entities.push_back(new GameEntity(bullet, bulletMaterial));
+								player.ships[i]->projectiles.push_back(new Projectile(entities[entities.size() - 1], 20));
+								player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->speed = 10;
+							}
+							else if (player.ships[i]->shipType == 's')
+							{
+								entities.push_back(new GameEntity(torpedo, torpedoMaterial));
+								player.ships[i]->projectiles.push_back(new Projectile(entities[entities.size() - 1], 35));
+								player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->speed = 4;
+							}
+							player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetPosition(player.ships[i]->shipEntity->GetPosition());
+							player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
+							player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->SetRotation(XMFLOAT3(0.0f, 0.0f, -1.57f));
+							player.ships[i]->projectiles[player.ships[i]->projectiles.size() - 1]->projectileEntity->Update();
 
-					player.ships[i]->projectileTimer = 0;
-				}
+							player.ships[i]->projectileTimer = 0;
+						}
+						else if (player.ships[i]->shipType == 'm')
+						{
+							player.resources++;
+							player.ships[i]->projectileTimer = 0;
+						}
+					}
 
 				//update mesh
 				player.ships[i]->shipEntity->Update();
@@ -492,6 +656,20 @@ void MyDemoGame::UpdateScene(float dt)
 					{
 						//delete player.ships[i]->projectiles[j];
 						player.ships[i]->projectiles.erase(player.ships[i]->projectiles.begin() + j);
+						break;
+					}
+
+					//check collisions with enemies
+					for (int k = 0; k < enemy.ships.size(); k++)
+					{
+						BoundingBox tempBB = enemy.ships[k]->shipEntity->GetBoundingBox();
+						BoundingBox tempBBP = player.ships[i]->projectiles[j]->projectileEntity->GetBoundingBox();
+						if (tempBB.IsColliding(tempBBP))
+						{
+							enemy.ships[k]->health -= player.ships[i]->projectiles[j]->damage;
+							player.ships[i]->projectiles.erase(player.ships[i]->projectiles.begin() + j);
+							break;
+						}
 					}
 				}
 			}
@@ -503,9 +681,34 @@ void MyDemoGame::UpdateScene(float dt)
 				if (enemy.ships[i]->shipEntity->GetPosition().x < -6)
 				{
 					enemy.ships.erase(enemy.ships.begin() + i);
+					player.health -= 10;
+				}
+				if (enemy.ships[i]->health <= 0)
+				{
+					enemy.kills++;
+					enemy.ships.erase(enemy.ships.begin() + i);
+				}
+				//see if the enemy has collided with a player ship
+				for (int k = 0; k < player.ships.size(); k++)
+				{
+					BoundingBox tempBB = enemy.ships[i]->shipEntity->GetBoundingBox();
+					BoundingBox tempBBP = player.ships[k]->shipEntity->GetBoundingBox();
+					if (tempBB.IsColliding(tempBBP))
+					{
+						enemy.ships.erase(enemy.ships.begin() + i);
+						player.ships.erase(player.ships.begin() + k);
+						break;
+					}
 				}
 			}
 			camera->Update();
+
+			//lose game condition
+			if (player.health <= 0)
+			{
+				startScreen->setMaterial(gameOverMaterial);
+				state = Over;
+			}
 			break;
 
 		case Paused:
@@ -524,7 +727,17 @@ void MyDemoGame::UpdateScene(float dt)
 			break;
 
 		case Over:
-
+			/*
+			startScreen = new GameEntity(waterMesh, gameOverMaterial);
+			startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			startScreen->SetRotation(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			startScreen->SetScale(XMFLOAT3(1.0f, 1.0f, 1.0f));
+			startScreen->Update();
+			//camera->SetDirection(XMFLOAT3(0.0f, 0.0f, 0.0f));
+			camera->SetRotation(180, 0);
+			//camera->Rotate(0, 310);
+			camera->Update();
+			*/
 			break;
 	}
 
@@ -538,6 +751,25 @@ void MyDemoGame::DrawScene()
 	const float startColor[4] = {0.2f, 0.2f, 0.2f, 0.0f};
 	const float gameColor[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 	const float pauseColor[4] = { 0.15f, 0.35f, 0.5f, 0.0f };
+
+	//set up strings
+	//resources
+	std::wstring s = std::to_wstring(player.resources);
+	std::wstring s2 = L"Resources: ";
+	s = s2 + s;
+	const wchar_t* text = s.c_str();
+
+	//round
+	std::wstring round = std::to_wstring(enemy.round);
+	std::wstring round2 = L"Round: ";
+	round = round2 + round;
+	const wchar_t* roundText = round.c_str();
+
+	//health
+	std::wstring health = std::to_wstring(player.health);
+	std::wstring health2 = L"Health: ";
+	health = health2 + health;
+	const wchar_t* healthText = health.c_str();
 
 
 	// Clear the buffer (erases what's on the screen)
@@ -582,9 +814,15 @@ void MyDemoGame::DrawScene()
 		{
 			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera);
 		}
+
+		//draw the placement ship
+		entities[2]->Draw(*deviceContext, *camera);
+
 		//text
 		m_spriteBatch->Begin();
-		m_font->DrawString(m_spriteBatch.get(), L"Ships Left:", XMFLOAT2(0, 0));
+		m_font->DrawString(m_spriteBatch.get(), healthText, XMFLOAT2(0, 0));
+		m_font->DrawString(m_spriteBatch.get(), text, XMFLOAT2(350, 0));
+		m_font->DrawString(m_spriteBatch.get(), roundText, XMFLOAT2(800, 0));
 		m_spriteBatch->End();
 		break;
 
@@ -597,7 +835,20 @@ void MyDemoGame::DrawScene()
 		break;
 
 	case Over:
+		/*
+		XMFLOAT2 m_fontPos;
+		m_fontPos.x = windowWidth / 2.f;
+		m_fontPos.y = windowHeight / 2.f;
 
+		m_spriteBatch->Begin();
+		const wchar_t* output = L"Game Over";
+
+		m_font->DrawString(m_spriteBatch.get(), output,
+			m_fontPos, Colors::White, 0.f, XMFLOAT2(150, 0));
+
+		m_spriteBatch->End();
+		*/
+		startScreen->Draw(*deviceContext, *camera);
 		break;
 	}
 
@@ -610,6 +861,132 @@ void MyDemoGame::DrawScene()
 }
 
 #pragma endregion
+
+void MyDemoGame::CreateSphere(int LatLines, int LongLines)
+{
+	NumSphereVertices = ((LatLines - 2) * LongLines) + 2;
+	NumSphereFaces = ((LatLines - 3)*(LongLines)* 2) + (LongLines * 2);
+
+	float sphereYaw = 0.0f;
+	float spherePitch = 0.0f;
+
+	std::vector<Vertex> vertices(NumSphereVertices);
+
+	XMVECTOR currVertPos = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+
+	vertices[0].Position.x = 0.0f;
+	vertices[0].Position.y = 0.0f;
+	vertices[0].Position.z = 1.0f;
+
+	for (DWORD i = 0; i < LatLines - 2; ++i)
+	{
+		spherePitch = (i + 1) * (3.14 / (LatLines - 1));
+		XMMATRIX Rotationx = XMMatrixRotationX(spherePitch);
+		for (DWORD j = 0; j < LongLines; ++j)
+		{
+			sphereYaw = j * (6.28 / (LongLines));
+			XMMATRIX Rotationy = XMMatrixRotationZ(sphereYaw);
+			currVertPos = XMVector3TransformNormal(XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f), (Rotationx * Rotationy));
+			currVertPos = XMVector3Normalize(currVertPos);
+			vertices[i*LongLines + j + 1].Position.x = XMVectorGetX(currVertPos);
+			vertices[i*LongLines + j + 1].Position.y = XMVectorGetY(currVertPos);
+			vertices[i*LongLines + j + 1].Position.z = XMVectorGetZ(currVertPos);
+		}
+	}
+
+	vertices[NumSphereVertices - 1].Position.x = 0.0f;
+	vertices[NumSphereVertices - 1].Position.y = 0.0f;
+	vertices[NumSphereVertices - 1].Position.z = -1.0f;
+
+
+	D3D11_BUFFER_DESC vertexBufferDesc;
+	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
+
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.ByteWidth = sizeof(Vertex) * NumSphereVertices;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.CPUAccessFlags = 0;
+	vertexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData;
+
+	ZeroMemory(&vertexBufferData, sizeof(vertexBufferData));
+	vertexBufferData.pSysMem = &vertices[0];
+
+	//???
+	//hr = device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &sphereVertBuffer);
+	device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &sphereVertBuffer);
+
+
+	std::vector<DWORD> indices(NumSphereFaces * 3);
+
+	int k = 0;
+	for (DWORD l = 0; l < LongLines - 1; ++l)
+	{
+		indices[k] = 0;
+		indices[k + 1] = l + 1;
+		indices[k + 2] = l + 2;
+		k += 3;
+	}
+
+	indices[k] = 0;
+	indices[k + 1] = LongLines;
+	indices[k + 2] = 1;
+	k += 3;
+
+	for (DWORD i = 0; i < LatLines - 3; ++i)
+	{
+		for (DWORD j = 0; j < LongLines - 1; ++j)
+		{
+			indices[k] = i*LongLines + j + 1;
+			indices[k + 1] = i*LongLines + j + 2;
+			indices[k + 2] = (i + 1)*LongLines + j + 1;
+
+			indices[k + 3] = (i + 1)*LongLines + j + 1;
+			indices[k + 4] = i*LongLines + j + 2;
+			indices[k + 5] = (i + 1)*LongLines + j + 2;
+
+			k += 6; // next quad
+		}
+
+		indices[k] = (i*LongLines) + LongLines;
+		indices[k + 1] = (i*LongLines) + 1;
+		indices[k + 2] = ((i + 1)*LongLines) + LongLines;
+
+		indices[k + 3] = ((i + 1)*LongLines) + LongLines;
+		indices[k + 4] = (i*LongLines) + 1;
+		indices[k + 5] = ((i + 1)*LongLines) + 1;
+
+		k += 6;
+	}
+
+	for (DWORD l = 0; l < LongLines - 1; ++l)
+	{
+		indices[k] = NumSphereVertices - 1;
+		indices[k + 1] = (NumSphereVertices - 1) - (l + 1);
+		indices[k + 2] = (NumSphereVertices - 1) - (l + 2);
+		k += 3;
+	}
+
+	indices[k] = NumSphereVertices - 1;
+	indices[k + 1] = (NumSphereVertices - 1) - LongLines;
+	indices[k + 2] = NumSphereVertices - 2;
+
+	D3D11_BUFFER_DESC indexBufferDesc;
+	ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
+
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.ByteWidth = sizeof(DWORD) * NumSphereFaces * 3;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA iinitData;
+
+	iinitData.pSysMem = &indices[0];
+	device->CreateBuffer(&indexBufferDesc, &iinitData, &sphereIndexBuffer);
+
+}
 
 #pragma region Mouse Input
 
@@ -626,20 +1003,78 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 
 	SetCapture(hMainWnd);
 
-	GridTile* closest = grid->GetNearestTile(prevMousePos.x, prevMousePos.y, 1280, 720, camera);
-	XMFLOAT3 shipPos = closest->GetPosition();
+	if (player.resources >= player.nextShipCost)
+	{
+		GridTile* closest = grid->GetNearestTile(prevMousePos.x, prevMousePos.y, 1280, 720, camera);
+		XMFLOAT3 shipPos = closest->GetPosition();
 
-	//make a new ship
-	entities.push_back(new GameEntity(mesh3, material));
-	player.ships.push_back(new Ship(entities[entities.size() - 1]));
+		//make a new ship
+		//determine which ship type to make
+		if (player.currentShip == 'm' && (grid->lastIndexUsed % 10 == 0))
+		{
+			entities.push_back(new GameEntity(mine, mineMaterial));
+			player.ships.push_back(new Ship(entities[entities.size() - 1], 'm'));
 
-	player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
-	player.ships[player.ships.size() - 1]->speed = 0;
-	player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.1f, 0.1f, 0.1f));
-	player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
-	player.numShips--;
-	player.ships[player.ships.size() - 1]->shipEntity->Update();
+			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+			player.ships[player.ships.size() - 1]->speed = 0;
+			player.ships[player.ships.size() - 1]->shootRate = 2;
+			player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
+			player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, -1.57f, 0.0f));
+			player.numShips--;
+			player.ships[player.ships.size() - 1]->shipEntity->Update();
 
+			//use up resources to buy ship
+			player.resources -= player.ships[player.ships.size() - 1]->cost;
+		}
+		if (player.currentShip == 'a' && (grid->lastIndexUsed % 10 != 0))
+		{
+			entities.push_back(new GameEntity(assaultBoat, assaultMaterial ));
+			player.ships.push_back(new Ship(entities[entities.size() - 1], 'a'));
+
+			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+			player.ships[player.ships.size() - 1]->speed = 0;
+			player.ships[player.ships.size() - 1]->shootRate = 1;
+			player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
+			player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 3.14f, 0.0f));
+			player.numShips--;
+			player.ships[player.ships.size() - 1]->shipEntity->Update();
+
+			//use up resources to buy ship
+			player.resources -= player.ships[player.ships.size() - 1]->cost;
+		}
+		else if (player.currentShip == 's' && (grid->lastIndexUsed % 10 != 0))
+		{
+			entities.push_back(new GameEntity(submarine, subMaterial));
+			player.ships.push_back(new Ship(entities[entities.size() - 1], 's'));
+
+			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+			player.ships[player.ships.size() - 1]->speed = 0;
+			player.ships[player.ships.size() - 1]->shootRate = 1.5;
+			player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
+			player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+			player.numShips--;
+			player.ships[player.ships.size() - 1]->shipEntity->Update();
+
+			//use up resources to buy ship
+			player.resources -= player.ships[player.ships.size() - 1]->cost;
+		}
+		else if (player.currentShip == 'b' && (grid->lastIndexUsed % 10 != 0))
+		{
+			entities.push_back(new GameEntity(battleship, battleMaterial));
+			player.ships.push_back(new Ship(entities[entities.size() - 1], 'b'));
+
+			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
+			player.ships[player.ships.size() - 1]->speed = 0;
+			player.ships[player.ships.size() - 1]->shootRate = 0.5f;
+			player.ships[player.ships.size() - 1]->shipEntity->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
+			player.ships[player.ships.size() - 1]->shipEntity->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
+			player.numShips--;
+			player.ships[player.ships.size() - 1]->shipEntity->Update();
+
+			//use up resources to buy ship
+			player.resources -= player.ships[player.ships.size() - 1]->cost;
+		}
+	}
 }
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
@@ -664,5 +1099,10 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 		//camera->Rotate(xDif, yDif);
 	prevMousePos.x = x;
 	prevMousePos.y = y;
+
+	GridTile* closest = grid->GetNearestTile(prevMousePos.x, prevMousePos.y, 1280, 720, camera);
+	XMFLOAT3 shipPos = closest->GetPosition();
+	
+	entities[2]->SetPosition(shipPos);
 }
 #pragma endregion
