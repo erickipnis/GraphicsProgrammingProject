@@ -100,3 +100,14 @@ void GameEntity::Scale(XMFLOAT3 offset)
 	XMStoreFloat3(&mScale, tempScale);
 
 }
+
+void GameEntity::setMesh(Mesh* mesh)
+{
+	mMesh = mesh;
+}
+
+void GameEntity::setMaterial(Material* mat)
+{
+	mMaterial = mat;
+}
+

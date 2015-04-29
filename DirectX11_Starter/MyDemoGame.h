@@ -83,7 +83,14 @@ private:
 	Mesh* mesh2;
 	Mesh* mesh3;
 
+	Mesh* enemyBoat;
+
+	Mesh* battleship;
+	Mesh* assaultBoat;
+	Mesh* submarine;
+
 	Mesh* torpedo;
+	Mesh* bullet;
 
 	Mesh* tileMesh;
 	Mesh* startMenu;
@@ -94,6 +101,9 @@ private:
 	Mesh* fullScreenQuad;
 	SimpleVertexShader* quadVS;
 	SimplePixelShader* quadPS;
+
+	Mesh* base;
+	Mesh* mine;
 
 	GameEntity* startScreen;
 
@@ -116,11 +126,24 @@ private:
 	Material* material;
 	Material* tileMaterial;
 
+	Material* bulletMaterial;
+	Material* torpedoMaterial;
+
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
+	Material* gameOverMaterial;
 	Material* waterMaterial;
+
+	//ship materials
+	Material* assaultMaterial;
+	Material* subMaterial;
+	Material* battleMaterial;
+	Material* enemyMaterial;
+
+	Material* baseMaterial;
+	Material* mineMaterial;
 
 	// Lighting
 	DirectionalLight directionalLight;
@@ -141,6 +164,7 @@ private:
 	//Enemy - will have ships, spawn rate, etc. 
 	Enemy enemy;
 
+	//text stuff
 	std::unique_ptr<DirectX::SpriteFont> m_font;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
@@ -157,4 +181,25 @@ private:
 	// Texture-related variables
 	ID3D11SamplerState* samplerState;
 	D3D11_SAMPLER_DESC samplerDesc;
+
+	//skybox stuff
+	ID3D11Buffer* sphereIndexBuffer;
+	ID3D11Buffer* sphereVertBuffer;
+
+	ID3D11VertexShader* SKYMAP_VS;
+	ID3D11PixelShader* SKYMAP_PS;
+	ID3D10Blob* SKYMAP_VS_Buffer;
+	ID3D10Blob* SKYMAP_PS_Buffer;
+
+	ID3D11ShaderResourceView* smrv;
+
+	ID3D11DepthStencilState* DSLessEqual;
+	ID3D11RasterizerState* RSCullNone;
+
+	int NumSphereVertices;
+	int NumSphereFaces;
+
+	XMMATRIX sphereWorld;
+
+	void CreateSphere(int LatLines, int LongLines);
 };

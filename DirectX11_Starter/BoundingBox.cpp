@@ -65,9 +65,9 @@ void BoundingBox::Update(XMFLOAT4X4 world)
 bool BoundingBox::IsColliding(BoundingBox& other)
 {
 	// AABB collision detection
-	if (AABBMin.x < other.GetAABBMax().z || AABBMax.x > other.GetAABBMin().x || // test x-axis
-		AABBMin.y < other.GetAABBMax().y || AABBMax.y > other.GetAABBMin().y || // test y-axis
-		AABBMin.z < other.GetAABBMax().z || AABBMax.z > other.GetAABBMin().z)// test z-axis
+	if ((AABBMin.x < other.GetAABBMax().x && AABBMax.x > other.GetAABBMin().x) && // test x-axis
+		(AABBMin.y < other.GetAABBMax().y && AABBMax.y > other.GetAABBMin().y) && // test y-axis
+		(AABBMin.z < other.GetAABBMax().z && AABBMax.z > other.GetAABBMin().z))// test z-axis
 		return true;
 
 	return false;

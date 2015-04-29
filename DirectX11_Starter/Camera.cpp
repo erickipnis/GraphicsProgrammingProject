@@ -84,3 +84,9 @@ void Camera::SetDirection(XMFLOAT3 direction)
 {
 	mDirection = direction;
 }
+
+void Camera::SetRotation(int x, int y)
+{
+	mRotationX = x;
+	mRotationY = y;
+}

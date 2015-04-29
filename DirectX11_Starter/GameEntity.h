@@ -72,5 +72,8 @@ public:
 	void Scale(XMFLOAT3 offset);
 	void Draw(ID3D11DeviceContext& device, Camera& camera);
 
+	void setMesh(Mesh * mesh);
+	void setMaterial(Material* mat);
+
 
 };

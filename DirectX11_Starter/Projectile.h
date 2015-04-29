@@ -3,10 +3,11 @@
 class Projectile
 {
 public:
-	Projectile(GameEntity* e);
+	Projectile(GameEntity* e, int d);
 	~Projectile();
 
 	int speed;
+	int damage;
 	GameEntity* projectileEntity;
 };
 
