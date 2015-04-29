@@ -65,6 +65,7 @@ private:
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
 	void InitializeCameraMatrices();
+	void InitializeScreenRenderToTexture();
 
 private:
 	// The matrices to go from model space
@@ -89,6 +90,11 @@ private:
 
 	Mesh* waterMesh;
 
+	// Full screen quad
+	Mesh* fullScreenQuad;
+	SimpleVertexShader* quadVS;
+	SimplePixelShader* quadPS;
+
 	GameEntity* startScreen;
 
 	// vector of entities
@@ -110,15 +116,11 @@ private:
 	Material* material;
 	Material* tileMaterial;
 
-
-
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
-
-
 
 	// Lighting
 	DirectionalLight directionalLight;
@@ -141,4 +143,18 @@ private:
 
 	std::unique_ptr<DirectX::SpriteFont> m_font;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	// Water Reflection 
+	ID3D11Texture2D* screenRenderTexture;
+	ID3D11RenderTargetView* screenRenderTargetView;
+	ID3D11ShaderResourceView* screenShaderResourceView;
+
+	// Water Refraction
+	ID3D11ShaderResourceView* waterNormalMapSRV;
+	SimpleVertexShader* refractVS;
+	SimplePixelShader* refractPS;
+
+	// Texture-related variables
+	ID3D11SamplerState* samplerState;
+	D3D11_SAMPLER_DESC samplerDesc;
 };

@@ -136,7 +136,6 @@ MyDemoGame::~MyDemoGame()
 		vertexShader = nullptr;
 	}
 
-
 	if (normalMapPixelShader != nullptr)
 	{
 		delete normalMapPixelShader;
@@ -154,6 +153,24 @@ MyDemoGame::~MyDemoGame()
 		delete grid;
 		grid = nullptr;
 	}
+
+	if (quadVS != nullptr)
+	{
+		delete quadVS;
+		quadVS = nullptr;
+	}
+
+	if (quadPS != nullptr)
+	{
+		delete quadPS;
+		quadPS = nullptr;
+	}
+
+	samplerState->Release();
+
+	//waterReflectionTexture->Release();
+	//waterReflectionRTV->Release();
+	//waterReflectionSRV->Release();
 }
 
 #pragma endregion
@@ -183,21 +200,17 @@ bool MyDemoGame::Init()
 	if( !DirectXGame::Init() )
 		return false;
 
+	// Load pixel & vertex shaders, and then create an input layout
+	LoadShadersAndInputLayout();
+
 	// Create the necessary DirectX buffers to draw something
 	CreateGeometryBuffers();
-
-	// initialize shaders
-	pixelShader = new SimplePixelShader(device, deviceContext);
-	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
-	vertexShader = new SimpleVertexShader(device, deviceContext);
-	normalMapVertexShader = new SimpleVertexShader(device, deviceContext);
 
 	// create sampler state and resource view for materials
 	ID3D11ShaderResourceView* srv;
 	ID3D11ShaderResourceView* tileSRV;
 
-	ID3D11SamplerState* samplerState;
-	D3D11_SAMPLER_DESC samplerDesc;
+	// Initialize sampler description
 	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -205,6 +218,7 @@ bool MyDemoGame::Init()
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
+	device->CreateSamplerState(&samplerDesc, &samplerState);
 
 	// Testing Blend States for transparency
 	/*ID3D11BlendState* blendState;
@@ -215,19 +229,15 @@ bool MyDemoGame::Init()
 	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;*/
 
 	ID3D11ShaderResourceView* waterSRV;
-	ID3D11ShaderResourceView* waterNormalMapSRV;
 	ID3D11ShaderResourceView* defaultSRV;
 	ID3D11ShaderResourceView* startSRV;
 	ID3D11ShaderResourceView* instructSRV;
 	ID3D11ShaderResourceView* scoreSRV;
 	ID3D11ShaderResourceView* creditSRV;
 
-
-	device->CreateSamplerState(&samplerDesc, &samplerState);
 	//device->CreateBlendState(&blendDesc, &blendState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
-
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"tile2.png", 0, &tileSRV);
 
@@ -243,13 +253,11 @@ bool MyDemoGame::Init()
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleNormal.jpg", 0, &waterNormalMapSRV);
 
-	material = new Material(pixelShader, vertexShader, srv, samplerState);
 	waterMaterial = new Material(normalMapPixelShader, normalMapVertexShader, waterSRV, samplerState);
 	startDefaultMaterial = new Material(pixelShader, vertexShader, defaultSRV, samplerState);
 	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
 	startScoreMaterial = new Material(pixelShader, vertexShader, scoreSRV, samplerState);
-
 
 	// Create the game entities
 	startScreen = new GameEntity(waterMesh, startDefaultMaterial);
@@ -257,16 +265,15 @@ bool MyDemoGame::Init()
 	startScreen->SetRotation(XMFLOAT3(-0.2f, 0.0f, 0.0f));
 	startScreen->SetScale(XMFLOAT3(1.8f, 1.0f, 1.18f));
 	startScreen->Update();
-		// Create the game entities
+
+	// Create the game entities
 	entities.push_back(new GameEntity(mesh2, material));
 	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
 	entities[0]->Update();
 
+	// Create water entity
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
 	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
-
-	// Load pixel & vertex shaders, and then create an input layout
-	LoadShadersAndInputLayout();
 
 	pixelShader->SetData(
 		"directionalLight",
@@ -308,16 +315,37 @@ bool MyDemoGame::Init()
 	m_font.reset(new SpriteFont(device, L"myfile.spritefont"));
 	m_spriteBatch.reset(new SpriteBatch(deviceContext));
 
-	//make sure we draw tris correctly
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	InitializeScreenRenderToTexture();
 
 	// Successfully initialized
 	return true;
+
+
 }
 
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::CreateGeometryBuffers()
 {
+	Vertex quad[4];
+	quad[0].Position = XMFLOAT3(-1.0f, 1.0f, 0.0f);
+	quad[1].Position = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+	quad[2].Position = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	quad[3].Position = XMFLOAT3(1.0f, 1.0f, 0.0f);
+
+	quad[0].UV = XMFLOAT2(0.0f, 0.0f);
+	quad[1].UV = XMFLOAT2(0.0f, 1.0f);
+	quad[2].UV = XMFLOAT2(1.0f, 1.0f);
+	quad[3].UV = XMFLOAT2(1.0f, 0.0f);
+
+	unsigned int indices[6];
+	indices[0] = 0;
+	indices[1] = 2;
+	indices[2] = 1;
+	indices[3] = 0;
+	indices[4] = 3;
+	indices[5] = 2;
+
+	fullScreenQuad = new Mesh(quad, 4, indices, 6, device);
 
 	Vertex vertices[4] = 
 	{
@@ -327,7 +355,7 @@ void MyDemoGame::CreateGeometryBuffers()
 		{ XMFLOAT3(-0.5, 0.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }
 	};
 
-	UINT indices[] = { 0, 1, 2, 2, 3, 0 };
+	//UINT indices[] = { 0, 1, 2, 2, 3, 0 };
 	//mesh1 = new Mesh(vertices, 4, indices, 6, device);
 	mesh1 = new Mesh("sphere.obj", device);
 
@@ -358,11 +386,29 @@ void MyDemoGame::LoadShadersAndInputLayout()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,		0, 24,	D3D11_INPUT_PER_VERTEX_DATA, 0}
 	};
 
+	// Initialize vertex shaders
+	vertexShader = new SimpleVertexShader(device, deviceContext);
+	normalMapVertexShader = new SimpleVertexShader(device, deviceContext);
+	quadVS = new SimpleVertexShader(device, deviceContext);
+	refractVS = new SimpleVertexShader(device, deviceContext);
+	
+	// Initialize pixel shaders
+	pixelShader = new SimplePixelShader(device, deviceContext);
+	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
+	quadPS = new SimplePixelShader(device, deviceContext);	
+	refractPS = new SimplePixelShader(device, deviceContext);
+
+	// Load vertex shader files
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
+	normalMapVertexShader->LoadShaderFile(L"NormalMapVertexShader.cso");
+	quadVS->LoadShaderFile(L"QuadVertexShader.cso");
+	refractVS->LoadShaderFile(L"RefractVertexShader.cso");
+
+	// Load pixel shader files
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 	normalMapPixelShader->LoadShaderFile(L"NormalMapPixelShader.cso");
-	normalMapVertexShader->LoadShaderFile(L"NormalMapVertexShader.cso");
-
+	quadPS->LoadShaderFile(L"QuadPixelShader.cso");
+	refractPS->LoadShaderFile(L"RefractPixelShader.cso");
 }
 
 // Initializes the matrices necessary to represent our 3D camera
@@ -372,6 +418,41 @@ void MyDemoGame::InitializeCameraMatrices()
 	camera->SetDirection(XMFLOAT3(0.0f, -0.5f, 0.1f));
 	//camera->Rotate(0, 310);
 	camera->Update();
+}
+
+void MyDemoGame::InitializeScreenRenderToTexture()
+{
+	// Set up the water reflection render texture
+	D3D11_TEXTURE2D_DESC screenRenderTextureDesc;
+	screenRenderTextureDesc.ArraySize = 1;
+	screenRenderTextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	screenRenderTextureDesc.CPUAccessFlags = 0;
+	screenRenderTextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	screenRenderTextureDesc.Height = windowHeight;
+	screenRenderTextureDesc.MipLevels = 1;
+	screenRenderTextureDesc.MiscFlags = 0;
+	screenRenderTextureDesc.SampleDesc.Count = 1;
+	screenRenderTextureDesc.SampleDesc.Quality = 0;
+	screenRenderTextureDesc.Usage = D3D11_USAGE_DEFAULT;
+	screenRenderTextureDesc.Width = windowWidth;
+	device->CreateTexture2D(&screenRenderTextureDesc, 0, &screenRenderTexture);
+
+	// Set up the water reflection render target view
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	renderTargetViewDesc.Format = screenRenderTextureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	device->CreateRenderTargetView(screenRenderTexture, &renderTargetViewDesc, &screenRenderTargetView);
+
+	// Set up the water reflection shader resource view
+	D3D11_SHADER_RESOURCE_VIEW_DESC screenShaderResourceViewDesc;
+	ZeroMemory(&screenShaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	screenShaderResourceViewDesc.Format = screenRenderTextureDesc.Format;
+	screenShaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	screenShaderResourceViewDesc.Texture2D.MipLevels = 1;
+	screenShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	device->CreateShaderResourceView(screenRenderTexture, &screenShaderResourceViewDesc, &screenShaderResourceView);
 }
 
 #pragma endregion
@@ -539,31 +620,50 @@ void MyDemoGame::DrawScene()
 	const float gameColor[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 	const float pauseColor[4] = { 0.15f, 0.35f, 0.5f, 0.0f };
 
+	// Set up input primitive topology
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Clear the buffer (erases what's on the screen)
 	//  - Do this once per frame
 	//  - At the beginning (before drawing anything)
 	deviceContext->ClearRenderTargetView(renderTargetView, startColor);
 	deviceContext->ClearDepthStencilView(
-		depthStencilView, 
+		depthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
 
+	UINT stride;
+	UINT offset;
+	ID3D11Buffer* vb;
+	ID3D11ShaderResourceView* unset[1] = { 0 };
+
 	switch (state)
 	{
 	case Start:
+
 		startScreen->Draw(*deviceContext, *camera);
+
 		break;
 
 	case Game:
-		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
+
+		// Set render target view to render to texture in memory
+		deviceContext->OMSetRenderTargets(1, &screenRenderTargetView, depthStencilView);
+
+		// Clear the buffer (erases what's on the screen)
+		deviceContext->ClearRenderTargetView(screenRenderTargetView, startColor);
+		deviceContext->ClearDepthStencilView(
+			depthStencilView,
+			D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+			1.0f,
+			0);
 
 		grid->Draw(*deviceContext, *camera);
 
-		//draw water and base
+		//draw base
 		entities[0]->Draw(*deviceContext, *camera);
-		entities[1]->Draw(*deviceContext, *camera);
+		//entities[1]->Draw(*deviceContext, *camera);
 		//draw all of the player ships
 		for (int i = 0; i < player.ships.size(); i++)
 		{
@@ -586,6 +686,48 @@ void MyDemoGame::DrawScene()
 		m_spriteBatch->Begin();
 		m_font->DrawString(m_spriteBatch.get(), L"Ships Left:", XMFLOAT2(0, 0));
 		m_spriteBatch->End();
+
+		// Go back to the regular "back buffer"
+		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
+		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
+
+		quadVS->SetShader();
+		quadPS->SetSamplerState("basicSampler", samplerState);
+		quadPS->SetShaderResourceView("diffuseTexture", screenShaderResourceView);
+		quadPS->SetShader();
+
+		// Set quad data
+		stride = sizeof(Vertex);
+		offset = 0;
+		vb = fullScreenQuad->GetVertexBuffer();
+		deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+		deviceContext->IASetIndexBuffer(fullScreenQuad->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+		// Draw the quad
+		deviceContext->DrawIndexed(fullScreenQuad->GetIndexCount(), 0, 0);
+
+		// Re-enable the back buffer's depth buffer
+		deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+		// Send data to normal vertex for water refraction calculations
+		refractVS->SetMatrix4x4("view", viewMatrix);
+		refractVS->SetMatrix4x4("projection", projectionMatrix);
+		//refractVS->SetFloat3("camPos", XMFLOAT3(0, 0, -5));
+
+		// Send data to pixel shader for water refraction calculations
+		refractPS->SetFloat4("ambientColor", XMFLOAT4(0.5f, 0.5f, 0.5f, 1));
+		refractPS->SetFloat4("lightColor", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+		refractPS->SetFloat3("lightDir", XMFLOAT3(-1.0f, -1.0f, 0.0f));
+		refractPS->SetFloat3("lightPos", XMFLOAT3(0.0f, 3.0f, 0.0f));
+		refractPS->SetFloat3("camPos", XMFLOAT3(0.0f, 0.0f, -5.0f));
+		refractPS->SetShaderResourceView("normalTexture", waterNormalMapSRV);
+
+		// Draw the water with refraction
+		entities[1]->Draw(*deviceContext, *camera);
+
+		// Unset the shader resource
+		deviceContext->PSSetShaderResources(0, 1, unset);
+
 		break;
 
 	case Paused:
