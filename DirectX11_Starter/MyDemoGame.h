@@ -182,7 +182,11 @@ private:
 	ID3D11SamplerState* samplerState;
 	D3D11_SAMPLER_DESC samplerDesc;
 
+	// Depth Stencil State
+	ID3D11DepthStencilState* depthStencilState;
+
 	//skybox stuff
+	/*
 	ID3D11Buffer* sphereIndexBuffer;
 	ID3D11Buffer* sphereVertBuffer;
 
@@ -202,4 +206,5 @@ private:
 	XMMATRIX sphereWorld;
 
 	void CreateSphere(int LatLines, int LongLines);
+	*/
 };

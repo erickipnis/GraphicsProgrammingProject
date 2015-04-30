@@ -238,6 +238,33 @@ bool MyDemoGame::Init()
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
 
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+
+	// Depth test parameters
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	// Stencil test parameters
+	dsDesc.StencilEnable = true;
+	dsDesc.StencilReadMask = 0xFF;
+	dsDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing
+	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing
+	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create depth stencil state
+	device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+
 	// Testing Blend States for transparency
 	/*ID3D11BlendState* blendState;
 	D3D11_BLEND_DESC blendDesc;
@@ -263,10 +290,6 @@ bool MyDemoGame::Init()
 	ID3D11ShaderResourceView* torpedoSRV;
 	ID3D11ShaderResourceView* baseSRV;
 	ID3D11ShaderResourceView* mineSRV;
-
-
-
-	device->CreateSamplerState(&samplerDesc, &samplerState);
 
 	//device->CreateBlendState(&blendDesc, &blendState);
 
@@ -338,9 +361,9 @@ bool MyDemoGame::Init()
 
 
 	// Create the game entities
-	entities.push_back(new GameEntity(mesh2, material));
-	entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
-	entities[0]->Update();
+	//entities.push_back(new GameEntity(mesh2, material));
+	//entities[0]->SetPosition(XMFLOAT3(-5.0f, -1.0f, 1.0f));
+	//entities[0]->Update();
 
 	// Create water entity
 
@@ -355,37 +378,15 @@ bool MyDemoGame::Init()
 
 	//water
 	entities.push_back(new GameEntity(waterMesh, waterMaterial));
-	entities[1]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
-	entities[1]->SetScale(XMFLOAT3(2, 2, 2));
+	entities[1]->SetScale(XMFLOAT3(2.0f, 2.0f, 2.0f));
+	entities[1]->SetPosition(XMFLOAT3(5.0f, 0.01f, 2.0f));
 	entities[1]->Update();
 
 	//placement ship
 	entities.push_back(new GameEntity(assaultBoat, assaultMaterial));
 	entities[2]->SetRotation(XMFLOAT3(0.0f, 3.14f, 0.0f));
 	entities[2]->SetPosition(XMFLOAT3(5.0f, 1.0f, 1.0f));
-	entities[2]->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
-
-	pixelShader->SetData(
-		"directionalLight",
-		&directionalLight,
-		sizeof(DirectionalLight));
-
-	pixelShader->SetData(
-		"directionalLight2",
-		&directionalLight2,
-		sizeof(DirectionalLight));
-
-	normalMapPixelShader->SetData(
-		"directionalLight",
-		&directionalLight,
-		sizeof(DirectionalLight));
-
-	normalMapPixelShader->SetData(
-		"directionalLight2",
-		&directionalLight2,
-		sizeof(DirectionalLight));
-
-	normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);	
+	entities[2]->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));		
 
 	// Set up world matrix
 	// In an actual game, each object will need one of these and they should
@@ -409,7 +410,7 @@ bool MyDemoGame::Init()
 
 
 	//skybox stuff
-	CreateSphere(10, 10);
+	//CreateSphere(10, 10);
 
 	// Successfully initialized
 	return true;
@@ -521,6 +522,28 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	normalMapPixelShader->LoadShaderFile(L"NormalMapPixelShader.cso");
 	quadPS->LoadShaderFile(L"QuadPixelShader.cso");
 	refractPS->LoadShaderFile(L"RefractPixelShader.cso");
+
+	pixelShader->SetData(
+		"directionalLight",
+		&directionalLight,
+		sizeof(DirectionalLight));
+
+	pixelShader->SetData(
+		"directionalLight2",
+		&directionalLight2,
+		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetData(
+		"directionalLight",
+		&directionalLight,
+		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetData(
+		"directionalLight2",
+		&directionalLight2,
+		sizeof(DirectionalLight));
+
+	normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);
 }
 
 // Initializes the matrices necessary to represent our 3D camera
@@ -896,11 +919,6 @@ void MyDemoGame::DrawScene()
 
 		// Clear the buffer (erases what's on the screen)
 		deviceContext->ClearRenderTargetView(screenRenderTargetView, startColor);
-		deviceContext->ClearDepthStencilView(
-			depthStencilView,
-			D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-			1.0f,
-			0);
 
 		grid->Draw(*deviceContext, *camera);
 
@@ -928,13 +946,6 @@ void MyDemoGame::DrawScene()
 
 		//draw the placement ship
 		entities[2]->Draw(*deviceContext, *camera);
-
-		//text
-		m_spriteBatch->Begin();
-		m_font->DrawString(m_spriteBatch.get(), healthText, XMFLOAT2(0, 0));
-		m_font->DrawString(m_spriteBatch.get(), text, XMFLOAT2(350, 0));
-		m_font->DrawString(m_spriteBatch.get(), roundText, XMFLOAT2(800, 0));
-		m_spriteBatch->End();
 
 		// Go back to the regular "back buffer"
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
@@ -973,6 +984,15 @@ void MyDemoGame::DrawScene()
 
 		// Draw the water with refraction
 		entities[1]->Draw(*deviceContext, *camera);
+
+		//text
+		m_spriteBatch->Begin();
+		m_font->DrawString(m_spriteBatch.get(), healthText, XMFLOAT2(0, 0));
+		m_font->DrawString(m_spriteBatch.get(), text, XMFLOAT2(350, 0));
+		m_font->DrawString(m_spriteBatch.get(), roundText, XMFLOAT2(800, 0));
+		m_spriteBatch->End();
+
+		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 
 		// Unset the shader resource
 		deviceContext->PSSetShaderResources(0, 1, unset);
@@ -1015,6 +1035,7 @@ void MyDemoGame::DrawScene()
 
 #pragma endregion
 
+/*
 void MyDemoGame::CreateSphere(int LatLines, int LongLines)
 {
 	NumSphereVertices = ((LatLines - 2) * LongLines) + 2;
@@ -1140,6 +1161,7 @@ void MyDemoGame::CreateSphere(int LatLines, int LongLines)
 	device->CreateBuffer(&indexBufferDesc, &iinitData, &sphereIndexBuffer);
 
 }
+*/
 
 #pragma region Mouse Input
 
