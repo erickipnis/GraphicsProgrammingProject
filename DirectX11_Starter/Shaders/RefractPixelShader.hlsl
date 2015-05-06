@@ -28,6 +28,8 @@ SamplerState basicSampler : register(s0);
 // Entry point for this pixel shader
 float4 main(VertexToPixel input) : SV_TARGET
 {
+
+	return float4(1, 0, 0, 1);
 	// Re-normalize the normals coming in from the vertex shader
 	input.normal = normalize(input.normal);
 
@@ -50,6 +52,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float3 refraction = refract(-toCamera, adjustedNormal, 0.9f);
 	input.screenUV.x += refraction.x * 0.5f;
 	input.screenUV.y += refraction.y * 0.5f;
+
+	return float4(input.screenUV, 0, 1);
 
 	// Sample the screen texture
 	float4 diffuse = diffuseTexture.Sample(basicSampler, input.screenUV);

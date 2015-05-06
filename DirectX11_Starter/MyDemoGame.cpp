@@ -218,6 +218,8 @@ bool MyDemoGame::Init()
 	if( !DirectXGame::Init() )
 		return false;
 
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water-normal-map.png", 0, &waterNormalMapSRV);
+
 	// Load pixel & vertex shaders, and then create an input layout
 	LoadShadersAndInputLayout();
 
@@ -237,6 +239,17 @@ bool MyDemoGame::Init()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	device->CreateSamplerState(&samplerDesc, &samplerState);
+
+	// Initialize sampler description with no texture wrapping
+	ZeroMemory(&noWrapSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	noWrapSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	noWrapSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	noWrapSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	noWrapSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	noWrapSamplerDesc.MaxLOD = 0;
+	noWrapSamplerDesc.MinLOD = 0;
+
+	device->CreateSamplerState(&noWrapSamplerDesc, &noWrapSamplerState);
 
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 
@@ -330,8 +343,8 @@ bool MyDemoGame::Init()
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu_Instructions.png", 0, &instructSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"MainMenu_Scores.png", 0, &scoreSRV);
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"GameOverScreen.png", 0, &overSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
-	DirectX::CreateWICTextureFromFile(device, deviceContext, L"water-normal-map.png", 0, &waterNormalMapSRV);
+	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
+	
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleNormal.jpg", 0, &waterNormalMapSRV);
 
@@ -343,9 +356,11 @@ bool MyDemoGame::Init()
 	//device->CreateVertexShader(SKYMAP_VS_Buffer->GetBufferPointer(), SKYMAP_VS_Buffer->GetBufferSize(), NULL, &SKYMAP_VS);
 	//device->CreatePixelShader(SKYMAP_PS_Buffer->GetBufferPointer(), SKYMAP_PS_Buffer->GetBufferSize(), NULL, &SKYMAP_PS);
 
+	InitializeScreenRenderToTexture();
+
 	material = new Material(pixelShader, vertexShader, srv, samplerState);
 
-	waterMaterial = new Material(normalMapPixelShader, normalMapVertexShader, waterSRV, samplerState);
+	waterMaterial = new Material(normalMapPixelShader, normalMapVertexShader, screenShaderResourceView, noWrapSamplerState);
 	startDefaultMaterial = new Material(pixelShader, vertexShader, defaultSRV, samplerState);
 	startStartMaterial = new Material(pixelShader, vertexShader, startSRV, samplerState);
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
@@ -405,9 +420,6 @@ bool MyDemoGame::Init()
 
 	m_font.reset(new SpriteFont(device, L"myfile.spritefont"));
 	m_spriteBatch.reset(new SpriteBatch(deviceContext));
-
-	InitializeScreenRenderToTexture();
-
 
 	//skybox stuff
 	//CreateSphere(10, 10);
@@ -544,6 +556,9 @@ void MyDemoGame::LoadShadersAndInputLayout()
 		sizeof(DirectionalLight));
 
 	normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);
+	normalMapPixelShader->SetShaderResourceView("diffuseTexture", screenShaderResourceView);
+
+	normalMapPixelShader->SetFloat3("camPos", XMFLOAT3(0.0f, 10.0f, 0.0f));
 }
 
 // Initializes the matrices necessary to represent our 3D camera
@@ -866,6 +881,7 @@ void MyDemoGame::DrawScene()
 	const float startColor[4] = {0.2f, 0.2f, 0.2f, 0.0f};
 	const float gameColor[4] = { 0.4f, 0.6f, 0.75f, 0.0f };
 	const float pauseColor[4] = { 0.15f, 0.35f, 0.5f, 0.0f };
+	const float waterColor[4] = { 0.0f, 0.46667f, 0.74510f, 1.0f };
 
 	// Set up input primitive topology
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -914,13 +930,13 @@ void MyDemoGame::DrawScene()
 
 	case Game:
 
+		//entities[1]->setMaterial(waterMaterial);
+
 		// Set render target view to render to texture in memory
 		deviceContext->OMSetRenderTargets(1, &screenRenderTargetView, depthStencilView);
 
 		// Clear the buffer (erases what's on the screen)
-		deviceContext->ClearRenderTargetView(screenRenderTargetView, startColor);
-
-		grid->Draw(*deviceContext, *camera);
+		deviceContext->ClearRenderTargetView(screenRenderTargetView, waterColor);
 
 		//draw base
 		entities[0]->Draw(*deviceContext, *camera);
@@ -943,9 +959,6 @@ void MyDemoGame::DrawScene()
 		{
 			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera);
 		}
-
-		//draw the placement ship
-		entities[2]->Draw(*deviceContext, *camera);
 
 		// Go back to the regular "back buffer"
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
@@ -970,20 +983,29 @@ void MyDemoGame::DrawScene()
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 		// Send data to normal vertex for water refraction calculations
-		refractVS->SetMatrix4x4("view", viewMatrix);
-		refractVS->SetMatrix4x4("projection", projectionMatrix);
-		//refractVS->SetFloat3("camPos", XMFLOAT3(0, 0, -5));
+		//refractVS->SetMatrix4x4("view", viewMatrix);
+		//refractVS->SetMatrix4x4("projection", projectionMatrix);
+		////refractVS->SetFloat3("camPos", XMFLOAT3(0, 0, -5));
 
-		// Send data to pixel shader for water refraction calculations
-		refractPS->SetFloat4("ambientColor", XMFLOAT4(0.5f, 0.5f, 0.5f, 1));
-		refractPS->SetFloat4("lightColor", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
-		refractPS->SetFloat3("lightDir", XMFLOAT3(-1.0f, -1.0f, 0.0f));
-		refractPS->SetFloat3("lightPos", XMFLOAT3(0.0f, 3.0f, 0.0f));
-		refractPS->SetFloat3("camPos", XMFLOAT3(0.0f, 0.0f, -5.0f));
-		refractPS->SetShaderResourceView("normalTexture", waterNormalMapSRV);
+		//normalMapVertexShader->SetMatrix4x4("view", viewMatrix);
+		//normalMapVertexShader->SetMatrix4x4("projection", projectionMatrix);
+
+		//// Send data to pixel shader for water refraction calculations
+		//refractPS->SetFloat4("ambientColor", XMFLOAT4(0.5f, 0.5f, 0.5f, 1));
+		//refractPS->SetFloat4("lightColor", XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
+		//refractPS->SetFloat3("lightDir", XMFLOAT3(-1.0f, -1.0f, 0.0f));
+		//refractPS->SetFloat3("lightPos", XMFLOAT3(0.0f, 3.0f, 0.0f));
+		//refractPS->SetFloat3("camPos", XMFLOAT3(0.0f, 0.0f, -5.0f));
+		//refractPS->SetShaderResourceView("normalTexture", waterNormalMapSRV);
 
 		// Draw the water with refraction
 		entities[1]->Draw(*deviceContext, *camera);
+
+		//draw the placement ship
+		entities[2]->Draw(*deviceContext, *camera);
+
+		// Draw the grid
+		grid->Draw(*deviceContext, *camera);
 
 		//text
 		m_spriteBatch->Begin();

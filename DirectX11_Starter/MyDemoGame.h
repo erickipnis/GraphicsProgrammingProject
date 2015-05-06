@@ -134,6 +134,8 @@ private:
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* gameOverMaterial;
+
+	// Water materials
 	Material* waterMaterial;
 
 	//ship materials
@@ -180,7 +182,9 @@ private:
 
 	// Texture-related variables
 	ID3D11SamplerState* samplerState;
+	ID3D11SamplerState* noWrapSamplerState;
 	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_SAMPLER_DESC noWrapSamplerDesc;
 
 	// Depth Stencil State
 	ID3D11DepthStencilState* depthStencilState;
