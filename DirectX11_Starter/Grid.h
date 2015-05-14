@@ -11,8 +11,11 @@ public:
 
 	int GetColumns();
 	int GetRows();
+	GridTile getTile(int i);
 	GridTile* GetNearestTile(float xPos, float yPos, int screenWidth, int screenHeight, Camera* camera);
 	void Draw(ID3D11DeviceContext& deivce, Camera& camera);
+
+	int lastIndexUsed;
 private:
 
 	int numTiles;

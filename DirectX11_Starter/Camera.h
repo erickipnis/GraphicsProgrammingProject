@@ -19,6 +19,7 @@ public:
 	void Update();
 	void UpdateProjection(float aspectRatio);
 	void Rotate(int xDif, int yDif);
+	void SetRotation(int xDif, int yDif);
 	void SetDirection(XMFLOAT3 direction);
 	XMFLOAT3 GetPosition();
 

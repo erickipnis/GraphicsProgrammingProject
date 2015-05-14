@@ -28,6 +28,8 @@ struct VertexToPixel
 	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD;
 	float3 tangent		: TANGENT;
+	float3 worldPos		: TEXCOORD1;
+	noperspective float2 screenUV : TEXCOORD2;
 };
 
 // The entry point for our vertex shader
@@ -39,10 +41,15 @@ VertexToPixel main(VertexShaderInput input)
 	// Calculate output position
 	matrix worldViewProj = mul(mul(world, view), projection);
 	output.position = mul(float4(input.position, 1.0f), worldViewProj);
+
+	output.worldPos = mul(float4(input.position, 1.0f), world).xyz;
 	output.normal = mul(input.normal, (float3x3)world);
 	output.uv = input.uv;
 	output.tangent = mul(input.tangent, (float3x3)world);
-	//output.tangent = input.tangent;
+
+	output.screenUV = (output.position.xy / output.position.w);
+	output.screenUV.x = output.screenUV.x * 0.5f + 0.5f;
+	output.screenUV.y = -output.screenUV.y * 0.5f + 0.5f;
 
 	return output;
 }

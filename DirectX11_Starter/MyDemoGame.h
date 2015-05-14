@@ -66,6 +66,7 @@ private:
 	void CreateGeometryBuffers();
 	void LoadShadersAndInputLayout();
 	void InitializeCameraMatrices();
+	void InitializeScreenRenderToTexture();
 
 private:
 	// The matrices to go from model space
@@ -83,12 +84,27 @@ private:
 	Mesh* mesh2;
 	Mesh* mesh3;
 
+	Mesh* enemyBoat;
+
+	Mesh* battleship;
+	Mesh* assaultBoat;
+	Mesh* submarine;
+
 	Mesh* torpedo;
+	Mesh* bullet;
 
 	Mesh* tileMesh;
 	Mesh* startMenu;
 
 	Mesh* waterMesh;
+
+	// Full screen quad
+	Mesh* fullScreenQuad;
+	SimpleVertexShader* quadVS;
+	SimplePixelShader* quadPS;
+
+	Mesh* base;
+	Mesh* mine;
 
 	GameEntity* startScreen;
 
@@ -114,18 +130,29 @@ private:
 	Material* material;
 	Material* tileMaterial;
 
-
+	Material* bulletMaterial;
+	Material* torpedoMaterial;
 
 	Material* startDefaultMaterial;
 	Material* startStartMaterial;
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
+	Material* gameOverMaterial;
+
+	// Water materials
 	Material* waterMaterial;
 
+	//ship materials
+	Material* assaultMaterial;
+	Material* subMaterial;
+	Material* battleMaterial;
+	Material* enemyMaterial;
 	// Particle Materials (use p before name to indicate particle)
 	Material* pSmokeMaterial;
 	Material* pFireMaterial;
 
+	Material* baseMaterial;
+	Material* mineMaterial;
 
 
 	// Lighting
@@ -147,8 +174,51 @@ private:
 	//Enemy - will have ships, spawn rate, etc. 
 	Enemy enemy;
 
+	//text stuff
 	std::unique_ptr<DirectX::SpriteFont> m_font;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	// Water Reflection 
+	ID3D11Texture2D* screenRenderTexture;
+	ID3D11RenderTargetView* screenRenderTargetView;
+	ID3D11ShaderResourceView* screenShaderResourceView;
+
+	// Water Refraction
+	ID3D11ShaderResourceView* waterNormalMapSRV;
+	SimpleVertexShader* refractVS;
+	SimplePixelShader* refractPS;
+
+	// Texture-related variables
+	ID3D11SamplerState* samplerState;
+	ID3D11SamplerState* noWrapSamplerState;
+	D3D11_SAMPLER_DESC samplerDesc;
+	D3D11_SAMPLER_DESC noWrapSamplerDesc;
+
+	// Depth Stencil State
+	ID3D11DepthStencilState* depthStencilState;
+
+	//skybox stuff
+	/*
+	ID3D11Buffer* sphereIndexBuffer;
+	ID3D11Buffer* sphereVertBuffer;
+
+	ID3D11VertexShader* SKYMAP_VS;
+	ID3D11PixelShader* SKYMAP_PS;
+	ID3D10Blob* SKYMAP_VS_Buffer;
+	ID3D10Blob* SKYMAP_PS_Buffer;
+
+	ID3D11ShaderResourceView* smrv;
+
+	ID3D11DepthStencilState* DSLessEqual;
+	ID3D11RasterizerState* RSCullNone;
+
+	int NumSphereVertices;
+	int NumSphereFaces;
+
+	XMMATRIX sphereWorld;
+
+	void CreateSphere(int LatLines, int LongLines);
+	*/
 
 	// Particle Emitters
 	ParticleEmitter* smokeParticleEmitter;

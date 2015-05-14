@@ -29,7 +29,7 @@ Grid::Grid(int rows, int columns, float size, XMFLOAT3 offset, Mesh* mesh, Mater
 		}
 	}
 
-
+	lastIndexUsed = 0;
 }
 
 
@@ -96,6 +96,7 @@ GridTile* Grid::GetNearestTile(float xPos, float yPos, int screenWidth, int scre
 			index = i;
 		}
 	}
+	lastIndexUsed = index;
 	return tiles[index];
 }
 
@@ -108,6 +109,11 @@ void Grid::Draw(ID3D11DeviceContext& device, Camera& camera)
 	}
 
 	device.OMSetBlendState(NULL, NULL, 0xffffffff);
+}
+
+GridTile Grid::getTile(int i)
+{
+	return *tiles[i];
 }
 
 
