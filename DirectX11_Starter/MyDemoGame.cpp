@@ -286,7 +286,7 @@ bool MyDemoGame::Init()
 	device->CreateDepthStencilState(&dsDesc, &depthStencilState);
 
 	// Testing Blend States for transparency
-	/*ID3D11BlendState* blendState;
+	ID3D11BlendState* blendState;
 	// Blend States for transparency
 	ID3D11BlendState* blendStateAlphaAdd;
 	D3D11_BLEND_DESC blendDesc;
@@ -315,34 +315,34 @@ bool MyDemoGame::Init()
 	// Depth stencil state
 	//
 	//
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	//D3D11_DEPTH_STENCIL_DESC dsDesc;
 
-	// Depth test parameters
-	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	//// Depth test parameters
+	//dsDesc.DepthEnable = true;
+	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
 
-	// Stencil test parameters
-	dsDesc.StencilEnable = true;
-	dsDesc.StencilReadMask = 0xFF;
-	dsDesc.StencilWriteMask = 0xFF;
+	//// Stencil test parameters
+	//dsDesc.StencilEnable = true;
+	//dsDesc.StencilReadMask = 0xFF;
+	//dsDesc.StencilWriteMask = 0xFF;
 
-	// Stencil operations if pixel is front-facing
-	dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//// Stencil operations if pixel is front-facing
+	//dsDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	//dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	//dsDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	//dsDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	// Stencil operations if pixel is back-facing
-	dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	//// Stencil operations if pixel is back-facing
+	//dsDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	//dsDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	//dsDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	//dsDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
-	// regular depth state
-	device->CreateDepthStencilState(&dsDesc, &depthStencilState);
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	device->CreateDepthStencilState(&dsDesc, &depthStencilStateParticles);
+	//// regular depth state
+	//device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	//device->CreateDepthStencilState(&dsDesc, &depthStencilStateParticles);
 
 
 	ID3D11ShaderResourceView* waterSRV;
@@ -623,12 +623,14 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	normalMapVertexShader = new SimpleVertexShader(device, deviceContext);
 	quadVS = new SimpleVertexShader(device, deviceContext);
 	refractVS = new SimpleVertexShader(device, deviceContext);
+	particleVertexShader = new SimpleVertexShader(device, deviceContext);
 	
 	// Initialize pixel shaders
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
 	quadPS = new SimplePixelShader(device, deviceContext);	
 	refractPS = new SimplePixelShader(device, deviceContext);
+	pSmokePixelShader = new SimplePixelShader(device, deviceContext);
 
 	// Load vertex shader files
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
@@ -970,7 +972,7 @@ void MyDemoGame::UpdateScene(float dt)
 			}
 			break;
 
-		case Over:
+		//case Over:
 			/*
 			startScreen = new GameEntity(waterMesh, gameOverMaterial);
 			startScreen->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
@@ -982,7 +984,7 @@ void MyDemoGame::UpdateScene(float dt)
 			//camera->Rotate(0, 310);
 			camera->Update();
 			*/
-			break;
+			//break;
 	}
 
 	normalMapPixelShader->SetFloat("time", this->timer.TotalTime());
@@ -1043,7 +1045,7 @@ void MyDemoGame::DrawScene()
 		break;
 
 	case Game:
-		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+		//deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
 		//entities[1]->setMaterial(waterMaterial);
 
@@ -1074,6 +1076,14 @@ void MyDemoGame::DrawScene()
 			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera);
 		}
 
+		// Draw the grid
+		grid->Draw(*deviceContext, *camera);
+
+		deviceContext->OMSetDepthStencilState(depthStencilStateParticles, 1);
+		// particles
+		smokeParticleEmitter->Draw(*deviceContext, *camera);
+		fireParticleEmitter->Draw(*deviceContext, *camera);
+		fireParticleEmitter2->Draw(*deviceContext, *camera);
 		// Go back to the regular "back buffer"
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
 		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
@@ -1118,16 +1128,6 @@ void MyDemoGame::DrawScene()
 		//draw the placement ship
 		entities[2]->Draw(*deviceContext, *camera);
 
-		// Draw the grid
-		grid->Draw(*deviceContext, *camera);
-
-
-		deviceContext->OMSetDepthStencilState(depthStencilStateParticles, 0);
-		// particles
-		smokeParticleEmitter->Draw(*deviceContext, *camera);
-		fireParticleEmitter->Draw(*deviceContext, *camera);
-		fireParticleEmitter2->Draw(*deviceContext, *camera);
-
 		//deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 		//text
 		m_spriteBatch->Begin();
@@ -1135,7 +1135,6 @@ void MyDemoGame::DrawScene()
 		m_font->DrawString(m_spriteBatch.get(), text, XMFLOAT2(350, 0));
 		m_font->DrawString(m_spriteBatch.get(), roundText, XMFLOAT2(800, 0));
 		m_spriteBatch->End();
-		grid->Draw(*deviceContext, *camera);
 
 		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 		

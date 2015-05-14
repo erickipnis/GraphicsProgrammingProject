@@ -225,6 +225,5 @@ private:
 	ParticleEmitter* fireParticleEmitter;
 	ParticleEmitter* fireParticleEmitter2;
 
-	ID3D11DepthStencilState* depthStencilState;
 	ID3D11DepthStencilState* depthStencilStateParticles;
 };
