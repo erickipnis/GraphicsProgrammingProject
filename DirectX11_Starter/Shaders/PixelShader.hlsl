@@ -48,5 +48,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	// adding the texture color
 	finalColor *= surfaceColor;
+
 	return finalColor;
 }

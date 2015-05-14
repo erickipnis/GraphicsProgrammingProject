@@ -52,9 +52,9 @@ void Camera::Update()
 	if (GetAsyncKeyState('X') && 0x8000)
 	{
 		offset -= up * timer.DeltaTime();
-	}*/
+	}
 
-	//offset *= 2.0f;
+	offset *= 6.0f;*/
 
 	XMVECTOR tempPosition = XMLoadFloat3(&mPosition);
 	tempPosition += offset;
@@ -83,4 +83,9 @@ void Camera::Rotate(int xDif, int yDif)
 void Camera::SetDirection(XMFLOAT3 direction)
 {
 	mDirection = direction;
+}
+
+XMFLOAT3 Camera::GetPosition()
+{
+	return mPosition;
 }

@@ -11,6 +11,7 @@
 #include "Ship.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "ParticleEmitter.h"
 #include <time.h>       /* time */
 #include <SpriteFont.h>
 #include <SpriteBatch.h>
@@ -100,8 +101,11 @@ private:
 	// SimpleShaders
 	SimplePixelShader* pixelShader;
 	SimplePixelShader* normalMapPixelShader;
+	SimplePixelShader* pSmokePixelShader;
 	SimpleVertexShader* vertexShader;
 	SimpleVertexShader* normalMapVertexShader;
+	SimpleVertexShader* particleVertexShader;
+
 
 	// The camera
 	Camera* camera;
@@ -117,6 +121,10 @@ private:
 	Material* startInstructMaterial;
 	Material* startScoreMaterial;
 	Material* waterMaterial;
+
+	// Particle Materials (use p before name to indicate particle)
+	Material* pSmokeMaterial;
+	Material* pFireMaterial;
 
 
 
@@ -141,4 +149,12 @@ private:
 
 	std::unique_ptr<DirectX::SpriteFont> m_font;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	// Particle Emitters
+	ParticleEmitter* smokeParticleEmitter;
+	ParticleEmitter* fireParticleEmitter;
+	ParticleEmitter* fireParticleEmitter2;
+
+	ID3D11DepthStencilState* depthStencilState;
+	ID3D11DepthStencilState* depthStencilStateParticles;
 };

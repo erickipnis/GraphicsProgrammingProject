@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Windows.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -18,6 +20,8 @@ public:
 	void UpdateProjection(float aspectRatio);
 	void Rotate(int xDif, int yDif);
 	void SetDirection(XMFLOAT3 direction);
+	XMFLOAT3 GetPosition();
+
 private:
 	GameTimer timer;
 
