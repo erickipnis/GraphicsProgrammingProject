@@ -26,4 +26,7 @@ public:
 	//m = mine...i know this doesn't make much sense but it makes coding it easier
 
 	int cost;
+
+	float mouseX;
+	float mouseY;
 };

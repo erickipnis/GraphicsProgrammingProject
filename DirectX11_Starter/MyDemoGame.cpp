@@ -391,10 +391,14 @@ bool MyDemoGame::Init()
 	srand(time(NULL));
 
 	// Initialize Lights
-	directionalLight.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
-	directionalLight.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	directionalLight.AmbientColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	directionalLight.DiffuseColor = XMFLOAT4(0.75f, 0.75f, 0.75f, 1.0f);
 	directionalLight.Direction = XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f);
-	directionalLight.Position = XMFLOAT4(-15.0f, 10.0f, 2.0f, 1.0f);
+	directionalLight.Position = XMFLOAT4(-15.0f, 10.0f, 6.0f, 1.0f);
+
+	nextDayDraw = false;
+	nextDayDuration = 2.5;		//2.5 seconds
+	nextDayTimer = 0;
 
 	/*directionalLight2.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight2.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -1138,11 +1142,29 @@ void MyDemoGame::UpdateScene(float dt)
 			}
 			// Take input, update game logic, etc.
 			enemy.spawnTimer++;
-			if (enemy.kills >= enemy.killsForNextRound)
+			if (directionalLight.AmbientColor.x < 0.15f)
 			{
 				enemy.round++;
 				enemy.kills = 0;
 				enemy.killsForNextRound += 1;
+
+				//redo sun
+				directionalLight.AmbientColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+				directionalLight.DiffuseColor = XMFLOAT4(0.75f, 0.75f, 0.75f, 1.0f);
+				directionalLight.Direction = XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f);
+				directionalLight.Position = XMFLOAT4(-15.0f, 10.0f, 6.0f, 1.0f);
+
+				nextDayDraw = true;
+			}
+
+			if (nextDayDraw)
+			{
+				nextDayTimer++;
+			}
+			if ((nextDayTimer * dt) > nextDayDuration)
+			{
+				nextDayDraw = false;
+				nextDayTimer = 0;
 			}
 
 			//update static entities
@@ -1253,6 +1275,9 @@ void MyDemoGame::UpdateScene(float dt)
 					BoundingBox tempBBP = player.ships[k]->shipEntity->GetBoundingBox();
 					if (tempBB.IsColliding(tempBBP))
 					{
+						//make the tile empty
+						GridTile* closest = grid->GetNearestTile(player.ships[k]->mouseX, player.ships[k]->mouseY, 1280, 720, camera);
+						closest->setStatus(false);
 						enemy.ships.erase(enemy.ships.begin() + i);
 						player.ships.erase(player.ships.begin() + k);
 						break;
@@ -1271,6 +1296,31 @@ void MyDemoGame::UpdateScene(float dt)
 			smokeParticleEmitter->Update(dt);
 			fireParticleEmitter->Update(dt);
 			fireParticleEmitter2->Update(dt);
+
+			//update the light i.e. make a sun
+			change = 0.025f;
+			directionalLight.Position.z -= .01;
+			directionalLight.AmbientColor.x -= change * dt;
+			directionalLight.AmbientColor.y -= change * dt;
+			directionalLight.AmbientColor.z -= change * dt;
+			directionalLight.DiffuseColor.x -= change * dt;
+			directionalLight.DiffuseColor.y -= change * dt;
+			directionalLight.DiffuseColor.z -= change * dt;
+			normalMapPixelShader->SetData(
+				"directionalLight",
+				&directionalLight,
+				sizeof(DirectionalLight));
+
+			shadowPixelShader->SetData(
+				"directionalLight",
+				&directionalLight,
+				sizeof(DirectionalLight));
+
+			pixelShader->SetData(
+				"directionalLight",
+				&directionalLight,
+				sizeof(DirectionalLight));
+
 			break;
 
 		case Paused:
@@ -1328,7 +1378,7 @@ void MyDemoGame::DrawScene()
 
 	//round
 	std::wstring round = std::to_wstring(enemy.round);
-	std::wstring round2 = L"Round: ";
+	std::wstring round2 = L"Day: ";
 	round = round2 + round;
 	const wchar_t* roundText = round.c_str();
 
@@ -1337,6 +1387,10 @@ void MyDemoGame::DrawScene()
 	std::wstring health2 = L"Health: ";
 	health = health2 + health;
 	const wchar_t* healthText = health.c_str();
+
+	//next day
+	std::wstring nextDay = L"Next Day!";
+	const wchar_t* nextDayText = nextDay.c_str();
 
 	// Clear the buffer (erases what's on the screen)
 	//  - Do this once per frame
@@ -1465,6 +1519,10 @@ void MyDemoGame::DrawScene()
 		m_font->DrawString(m_spriteBatch.get(), healthText, XMFLOAT2(0, 0));
 		m_font->DrawString(m_spriteBatch.get(), text, XMFLOAT2(350, 0));
 		m_font->DrawString(m_spriteBatch.get(), roundText, XMFLOAT2(800, 0));
+		if (nextDayDraw)
+		{
+			m_font->DrawString(m_spriteBatch.get(), nextDayText, XMFLOAT2(1280 / 2 - 150, 720 / 2));
+		}
 		m_spriteBatch->End();
 
 		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
@@ -1664,11 +1722,14 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 
 		//make a new ship
 		//determine which ship type to make
-		if (player.currentShip == 'm' && (grid->lastIndexUsed % 10 == 0))
+		if (player.currentShip == 'm' && (grid->lastIndexUsed % 10 == 0) && !closest->IsOccupied())
 		{
+			closest->setStatus(true);
 			entities.push_back(new GameEntity(mine, mineMaterial));
 			player.ships.push_back(new Ship(entities[entities.size() - 1], 'm'));
 
+			player.ships[player.ships.size() - 1]->mouseX = prevMousePos.x;
+			player.ships[player.ships.size() - 1]->mouseY = prevMousePos.y;
 			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
 			player.ships[player.ships.size() - 1]->speed = 0;
 			player.ships[player.ships.size() - 1]->shootRate = 2;
@@ -1680,11 +1741,14 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 			//use up resources to buy ship
 			player.resources -= player.ships[player.ships.size() - 1]->cost;
 		}
-		if (player.currentShip == 'a' && (grid->lastIndexUsed % 10 != 0))
+		if (player.currentShip == 'a' && (grid->lastIndexUsed % 10 != 0) && !closest->IsOccupied())
 		{
+			closest->setStatus(true);
 			entities.push_back(new GameEntity(assaultBoat, assaultMaterial ));
 			player.ships.push_back(new Ship(entities[entities.size() - 1], 'a'));
 
+			player.ships[player.ships.size() - 1]->mouseX = prevMousePos.x;
+			player.ships[player.ships.size() - 1]->mouseY = prevMousePos.y;
 			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
 			player.ships[player.ships.size() - 1]->speed = 0;
 			player.ships[player.ships.size() - 1]->shootRate = 1;
@@ -1696,11 +1760,14 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 			//use up resources to buy ship
 			player.resources -= player.ships[player.ships.size() - 1]->cost;
 		}
-		else if (player.currentShip == 's' && (grid->lastIndexUsed % 10 != 0))
+		else if (player.currentShip == 's' && (grid->lastIndexUsed % 10 != 0) && !closest->IsOccupied())
 		{
+			closest->setStatus(true);
 			entities.push_back(new GameEntity(submarine, subMaterial));
 			player.ships.push_back(new Ship(entities[entities.size() - 1], 's'));
 
+			player.ships[player.ships.size() - 1]->mouseX = prevMousePos.x;
+			player.ships[player.ships.size() - 1]->mouseY = prevMousePos.y;
 			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
 			player.ships[player.ships.size() - 1]->speed = 0;
 			player.ships[player.ships.size() - 1]->shootRate = 1.5;
@@ -1712,11 +1779,14 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 			//use up resources to buy ship
 			player.resources -= player.ships[player.ships.size() - 1]->cost;
 		}
-		else if (player.currentShip == 'b' && (grid->lastIndexUsed % 10 != 0))
+		else if (player.currentShip == 'b' && (grid->lastIndexUsed % 10 != 0) && !closest->IsOccupied())
 		{
+			closest->setStatus(true);
 			entities.push_back(new GameEntity(battleship, battleMaterial));
 			player.ships.push_back(new Ship(entities[entities.size() - 1], 'b'));
 
+			player.ships[player.ships.size() - 1]->mouseX = prevMousePos.x;
+			player.ships[player.ships.size() - 1]->mouseY = prevMousePos.y;
 			player.ships[player.ships.size() - 1]->shipEntity->SetPosition(shipPos);
 			player.ships[player.ships.size() - 1]->speed = 0;
 			player.ships[player.ships.size() - 1]->shootRate = 0.5f;

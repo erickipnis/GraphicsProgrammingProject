@@ -165,6 +165,7 @@ private:
 	// Lighting
 	DirectionalLight directionalLight;
 	DirectionalLight directionalLight2;
+	float change;
 
 	//GameState enum
 	enum GameState { Start, Game, Paused, Over };
@@ -249,4 +250,8 @@ private:
 	ParticleEmitter* fireParticleEmitter2;
 
 	ID3D11DepthStencilState* depthStencilStateParticles;
+
+	float nextDayTimer;
+	float nextDayDuration;
+	bool nextDayDraw;
 };
