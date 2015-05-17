@@ -71,6 +71,8 @@ public:
 	void Rotate(XMFLOAT3 offset);
 	void Scale(XMFLOAT3 offset);
 	void Draw(ID3D11DeviceContext& device, Camera& camera);
+	void ShadowMapDraw(ID3D11DeviceContext& device, Camera& camera, SimpleVertexShader* simpVertShad);
+	void Draw(ID3D11DeviceContext& device, Camera& camera, Camera& shadowCamera, SimplePixelShader* pixShad, SimpleVertexShader* vertShad, ID3D11ShaderResourceView* shadowSRV, ID3D11SamplerState* comparisonSampler);
 
 	void setMesh(Mesh * mesh);
 	void setMaterial(Material* mat);

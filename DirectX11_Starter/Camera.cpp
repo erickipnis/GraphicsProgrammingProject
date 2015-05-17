@@ -90,3 +90,8 @@ void Camera::SetRotation(int x, int y)
 	mRotationX = x;
 	mRotationY = y;
 }
+
+void Camera::SetPosition(XMFLOAT3 newPos)
+{
+	mPosition = newPos;
+}

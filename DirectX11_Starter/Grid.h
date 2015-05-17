@@ -14,6 +14,8 @@ public:
 	GridTile getTile(int i);
 	GridTile* GetNearestTile(float xPos, float yPos, int screenWidth, int screenHeight, Camera* camera);
 	void Draw(ID3D11DeviceContext& deivce, Camera& camera);
+	void ShadowMapDraw(ID3D11DeviceContext& device, Camera& camera, SimpleVertexShader* simpVertShad);
+	void Draw(ID3D11DeviceContext& device, Camera& camera, Camera& shadowCamera, SimplePixelShader* pixShad, SimpleVertexShader* vertShad, ID3D11ShaderResourceView* shadowSRV, ID3D11SamplerState* comparisonSampler);
 
 	int lastIndexUsed;
 private:

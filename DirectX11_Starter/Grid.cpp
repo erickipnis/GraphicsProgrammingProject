@@ -106,6 +106,22 @@ void Grid::Draw(ID3D11DeviceContext& device, Camera& camera)
 	}
 }
 
+void Grid::ShadowMapDraw(ID3D11DeviceContext& device, Camera& camera, SimpleVertexShader* simpVertShad)
+{
+	for (int i = 0; i < numTiles; i++)
+	{
+		tiles[i]->ShadowMapDraw(device, camera, simpVertShad);
+	}
+}
+
+void Grid::Draw(ID3D11DeviceContext& device, Camera& camera, Camera& shadowCamera, SimplePixelShader* pixShad, SimpleVertexShader* vertShad, ID3D11ShaderResourceView* shadowSRV, ID3D11SamplerState* comparisonSampler)
+{
+	for (int i = 0; i < numTiles; i++)
+	{
+		tiles[i]->Draw(device, camera, shadowCamera, pixShad, vertShad, shadowSRV, comparisonSampler);
+	}
+}
+
 GridTile Grid::getTile(int i)
 {
 	return *tiles[i];

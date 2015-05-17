@@ -68,25 +68,95 @@ MyDemoGame::~MyDemoGame()
 		delete mesh1;
 		mesh1 = nullptr;
 	}
+
 	if (mesh2 != nullptr)
 	{
 		delete mesh2;
 		mesh2 = nullptr;
 	}
+
 	if (mesh3 != nullptr)
 	{
 		delete mesh3;
 		mesh3 = nullptr;
 	}
+
+	if (enemyBoat != nullptr)
+	{
+		delete enemyBoat;
+		enemyBoat = nullptr;
+	}
+
+	if (battleship != nullptr)
+	{
+		delete battleship;
+		battleship = nullptr;
+	}
+
+	if (assaultBoat != nullptr)
+	{
+		delete assaultBoat;
+		assaultBoat = nullptr;
+	}
+
+	if (submarine != nullptr)
+	{
+		delete submarine;
+		submarine = nullptr;
+	}
+
+	if (torpedo != nullptr)
+	{
+		delete torpedo;
+		torpedo = nullptr;
+	}
+
+	if (bullet != nullptr)
+	{
+		delete bullet;
+		bullet = nullptr;
+	}
+
+	if (tileMesh != nullptr)
+	{
+		delete tileMesh;
+		tileMesh = nullptr;
+	}
+
 	if (startMenu != nullptr)
 	{
 		delete startMenu;
 		startMenu = nullptr;
 	}
+
 	if (waterMesh != nullptr)
 	{
 		delete waterMesh;
 		waterMesh = nullptr;
+	}
+
+	if (mine != nullptr)
+	{
+		delete mine;
+		mine = nullptr;
+	}
+
+	if (base != nullptr)
+	{
+		delete base;
+		base = nullptr;
+	}
+
+	if (fullScreenQuad != nullptr)
+	{
+		delete fullScreenQuad;
+		fullScreenQuad = nullptr;
+	}
+
+	if (startScreen != nullptr)
+	{
+		delete startScreen;
+		startScreen = nullptr;
 	}
 
 	if (material != nullptr)
@@ -94,13 +164,98 @@ MyDemoGame::~MyDemoGame()
 		delete material;
 		material = nullptr;
 	}
+
 	if (waterMaterial != nullptr)
 	{
 		delete waterMaterial;
 		waterMaterial = nullptr;
 	}
 
-	for (int i = 0; i < entities.size(); i++)
+	if (bulletMaterial != nullptr)
+	{
+		delete bulletMaterial;
+		bulletMaterial = nullptr;
+	}
+
+	if (tileMaterial != nullptr)
+	{
+		delete tileMaterial;
+		tileMaterial = nullptr;
+	}
+
+	if (torpedoMaterial != nullptr)
+	{
+		delete torpedoMaterial;
+		torpedoMaterial = nullptr;
+	}
+
+	if (startDefaultMaterial != nullptr)
+	{
+		delete startDefaultMaterial;
+		startDefaultMaterial = nullptr;
+	}
+
+	if (startStartMaterial != nullptr)
+	{
+		delete startStartMaterial;
+		startStartMaterial = nullptr;
+	}
+
+	if (startInstructMaterial != nullptr)
+	{
+		delete startInstructMaterial;
+		startInstructMaterial = nullptr;
+	}
+
+	if (startScoreMaterial != nullptr)
+	{
+		delete startScoreMaterial;
+		startScoreMaterial = nullptr;
+	}
+
+	if (gameOverMaterial != nullptr)
+	{
+		delete gameOverMaterial;
+		gameOverMaterial = nullptr;
+	}
+
+	if (battleMaterial != nullptr)
+	{
+		delete battleMaterial;
+		battleMaterial = nullptr;
+	}
+
+	if (enemyMaterial != nullptr)
+	{
+		delete enemyMaterial;
+		enemyMaterial = nullptr;
+	}
+
+	if (subMaterial != nullptr)
+	{
+		delete subMaterial;
+		subMaterial = nullptr;
+	}
+
+	if (assaultMaterial != nullptr)
+	{
+		delete assaultMaterial;
+		assaultMaterial = nullptr;
+	}
+
+	if (mineMaterial != nullptr)
+	{
+		delete mineMaterial;
+		mineMaterial = nullptr;
+	}
+
+	if (baseMaterial != nullptr)
+	{
+		delete baseMaterial;
+		baseMaterial = nullptr;
+	}
+
+	for (UINT i = 0; i < entities.size(); i++)
 	{
 		if (entities[i] != nullptr)
 		{
@@ -108,7 +263,7 @@ MyDemoGame::~MyDemoGame()
 			entities[i] = nullptr;
 		}
 	}
-	for (int i = 0; i < ships.size(); i++)
+	for (UINT i = 0; i < ships.size(); i++)
 	{
 		if (ships[i] != nullptr)
 		{
@@ -117,11 +272,16 @@ MyDemoGame::~MyDemoGame()
 		}
 	}
 
-
 	if (camera != nullptr)
 	{
 		delete camera;
 		camera = nullptr;
+	}
+
+	if (shadowCamera != nullptr)
+	{
+		delete shadowCamera;
+		shadowCamera = nullptr;
 	}
 
 	if (pixelShader != nullptr)
@@ -148,6 +308,24 @@ MyDemoGame::~MyDemoGame()
 		normalMapVertexShader = nullptr;
 	}
 
+	if (shadowPixelShader != nullptr)
+	{
+		delete shadowPixelShader;
+		shadowPixelShader = nullptr;
+	}
+
+	if (shadowVertexShader != nullptr)
+	{
+		delete shadowVertexShader;
+		shadowVertexShader = nullptr;
+	}
+
+	if (simpleVertShader != nullptr)
+	{
+		delete simpleVertShader;
+		simpleVertShader = nullptr;
+	}
+
 	if (grid != nullptr)
 	{
 		delete grid;
@@ -167,6 +345,12 @@ MyDemoGame::~MyDemoGame()
 	}
 
 	samplerState->Release();
+	shadowMap->Release();
+	depthStencilView2->Release();
+	shadowResourceView->Release();
+	comparisonSampler->Release();
+	drawingRenderState->Release();
+	shadowRenderState->Release();
 
 	//waterReflectionTexture->Release();
 	//waterReflectionRTV->Release();
@@ -205,11 +389,12 @@ bool MyDemoGame::Init()
 	// Initialize Lights
 	directionalLight.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	directionalLight.Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	directionalLight.Direction = XMFLOAT4(1.0f, -1.0f, 0.0f, 1.0f);
+	directionalLight.Position = XMFLOAT4(-15.0f, 10.0f, 2.0f, 1.0f);
 
-	directionalLight2.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
+	/*directionalLight2.AmbientColor = XMFLOAT4(0.25f, 0.25f, 0.25f, 1.0f);
 	directionalLight2.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-	directionalLight2.Direction = XMFLOAT3(-1.0f, 1.0f, -1.0f);
+	directionalLight2.Direction = XMFLOAT3(-1.0f, 1.0f, -1.0f);*/
 
 	// Set up camera-related matrices
 	InitializeCameraMatrices();
@@ -225,6 +410,9 @@ bool MyDemoGame::Init()
 
 	// Create the necessary DirectX buffers to draw something
 	CreateGeometryBuffers();
+
+	//Init Shadows
+	InitializeShadows();
 
 	// create sampler state and resource view for materials
 	ID3D11ShaderResourceView* srv;
@@ -286,13 +474,12 @@ bool MyDemoGame::Init()
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;*/
 
-	ID3D11ShaderResourceView* waterSRV;
+	//ID3D11ShaderResourceView* waterSRV;
 	ID3D11ShaderResourceView* defaultSRV;
 	ID3D11ShaderResourceView* startSRV;
 	ID3D11ShaderResourceView* overSRV;
 	ID3D11ShaderResourceView* instructSRV;
 	ID3D11ShaderResourceView* scoreSRV;
-	ID3D11ShaderResourceView* creditSRV;
 
 	ID3D11ShaderResourceView* assaultSRV;
 	ID3D11ShaderResourceView* battleshipSRV;
@@ -386,7 +573,7 @@ bool MyDemoGame::Init()
 
 	//base
 	entities.push_back(new GameEntity(base, baseMaterial));
-	entities[0]->SetPosition(XMFLOAT3(-6.0f, 0.f, 2.5f));
+	entities[0]->SetPosition(XMFLOAT3(-5.5f, 0.f, 2.5f));
 	entities[0]->SetRotation(XMFLOAT3(0.0f, 1.57f, 0.0f));
 	entities[0]->SetScale(XMFLOAT3(0.05f, 0.05f, 0.05f));
 	entities[0]->Update();
@@ -428,6 +615,153 @@ bool MyDemoGame::Init()
 	return true;
 
 
+}
+
+void MyDemoGame::InitializeShadows()
+{
+	//Depth Buffer
+	D3D11_TEXTURE2D_DESC shadowMapDesc;
+	ZeroMemory(&shadowMapDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	shadowMapDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	shadowMapDesc.MipLevels = 1;
+	shadowMapDesc.ArraySize = 1;
+	shadowMapDesc.SampleDesc.Count = 1;
+	shadowMapDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	//shadowMapDesc.Height = static_cast<UINT>(m_shadowMapDimension);
+	//shadowMapDesc.Width = static_cast<UINT>(m_shadowMapDimension);
+	shadowMapDesc.Height = 1024;
+	shadowMapDesc.Width = 1024;
+	HR(device->CreateTexture2D(
+		&shadowMapDesc,
+		nullptr,
+		&shadowMap
+		));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	device->CreateDepthStencilView(
+		shadowMap,
+		&depthStencilViewDesc,
+		&depthStencilView2
+		);
+
+	device->CreateShaderResourceView(
+		shadowMap,
+		&shaderResourceViewDesc,
+		&shadowResourceView
+		);
+
+	//Depth Stencil State
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	ZeroMemory(&depthStencilViewDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	// Depth test parameters
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	// Stencil test parameters
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	// Stencil operations if pixel is front-facing
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Create depth stencil state
+	device->CreateDepthStencilState(&depthStencilDesc, &depthStencilState);
+
+	//Comparison State
+	D3D11_SAMPLER_DESC comparisonSamplerDesc;
+	ZeroMemory(&comparisonSamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	comparisonSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	comparisonSamplerDesc.BorderColor[0] = 1.0f;
+	comparisonSamplerDesc.BorderColor[1] = 1.0f;
+	comparisonSamplerDesc.BorderColor[2] = 1.0f;
+	comparisonSamplerDesc.BorderColor[3] = 1.0f;
+	comparisonSamplerDesc.MinLOD = 0.f;
+	comparisonSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	comparisonSamplerDesc.MipLODBias = 0.f;
+	comparisonSamplerDesc.MaxAnisotropy = 0;
+	comparisonSamplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	comparisonSamplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+
+	// Point filtered shadows can be faster, and may be a good choice when
+	// rendering on hardware with lower feature levels. This sample has a
+	// UI option to enable/disable filtering so you can see the difference
+	// in quality and speed.
+
+	HR(device->CreateSamplerState(
+		&comparisonSamplerDesc,
+		&comparisonSampler
+		));
+
+	//Render States
+	D3D11_RASTERIZER_DESC drawingRenderStateDesc;
+	ZeroMemory(&drawingRenderStateDesc, sizeof(D3D11_RASTERIZER_DESC));
+	drawingRenderStateDesc.CullMode = D3D11_CULL_BACK;
+	drawingRenderStateDesc.FillMode = D3D11_FILL_SOLID;
+	drawingRenderStateDesc.DepthClipEnable = true; // Feature level 9_1 requires DepthClipEnable == true
+	HR(device->CreateRasterizerState(
+		&drawingRenderStateDesc,
+		&drawingRenderState
+		));
+
+	D3D11_RASTERIZER_DESC shadowRenderStateDesc;
+	ZeroMemory(&shadowRenderStateDesc, sizeof(D3D11_RASTERIZER_DESC));
+	shadowRenderStateDesc.CullMode = D3D11_CULL_FRONT;
+	shadowRenderStateDesc.FillMode = D3D11_FILL_SOLID;
+	shadowRenderStateDesc.DepthClipEnable = true;
+
+	HR(device->CreateRasterizerState(
+		&shadowRenderStateDesc,
+		&shadowRenderState
+		));
+
+
+	//D3D11_BUFFER_DESC viewProjectionConstantBufferDesc;
+	//viewProjectionConstantBufferDesc.
+
+	//Constant Buffers
+	//HR(device->CreateBuffer(
+	//	&viewProjectionConstantBufferDesc,
+	//	nullptr,
+	//	&lightViewProjectionBuffer
+	//	));
+
+
+	//Viewport
+	ZeroMemory(&shadowViewport, sizeof(D3D11_VIEWPORT));
+	shadowViewport.Height = 1024;
+	shadowViewport.Width = 1024;
+	shadowViewport.MinDepth = 0.f;
+	shadowViewport.MaxDepth = 1.f;
+
+	//
 }
 
 // Creates the vertex and index buffers for a single triangle
@@ -516,44 +850,55 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	normalMapVertexShader = new SimpleVertexShader(device, deviceContext);
 	quadVS = new SimpleVertexShader(device, deviceContext);
 	refractVS = new SimpleVertexShader(device, deviceContext);
-	
+	shadowVertexShader = new SimpleVertexShader(device, deviceContext);
+	simpleVertShader = new SimpleVertexShader(device, deviceContext);
+
 	// Initialize pixel shaders
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
 	quadPS = new SimplePixelShader(device, deviceContext);	
 	refractPS = new SimplePixelShader(device, deviceContext);
+	shadowPixelShader = new SimplePixelShader(device, deviceContext);
 
 	// Load vertex shader files
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
 	normalMapVertexShader->LoadShaderFile(L"NormalMapVertexShader.cso");
 	quadVS->LoadShaderFile(L"QuadVertexShader.cso");
 	refractVS->LoadShaderFile(L"RefractVertexShader.cso");
+	shadowVertexShader->LoadShaderFile(L"ShadowVertexShader.cso");
+	simpleVertShader->LoadShaderFile(L"SimpleVertexShader.cso");
 
 	// Load pixel shader files
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 	normalMapPixelShader->LoadShaderFile(L"NormalMapPixelShader.cso");
 	quadPS->LoadShaderFile(L"QuadPixelShader.cso");
 	refractPS->LoadShaderFile(L"RefractPixelShader.cso");
-
-	pixelShader->SetData(
-		"directionalLight",
-		&directionalLight,
-		sizeof(DirectionalLight));
-
-	pixelShader->SetData(
-		"directionalLight2",
-		&directionalLight2,
-		sizeof(DirectionalLight));
+	shadowPixelShader->LoadShaderFile(L"ShadowPixelShader.cso");
 
 	normalMapPixelShader->SetData(
 		"directionalLight",
 		&directionalLight,
 		sizeof(DirectionalLight));
 
-	normalMapPixelShader->SetData(
+	shadowPixelShader->SetData(
+		"directionalLight",
+		&directionalLight,
+		sizeof(DirectionalLight));
+
+	pixelShader->SetData(
+		"directionalLight",
+		&directionalLight,
+		sizeof(DirectionalLight));
+
+	/*pixelShader->SetData(
 		"directionalLight2",
 		&directionalLight2,
-		sizeof(DirectionalLight));
+		sizeof(DirectionalLight));*/
+
+	/*normalMapPixelShader->SetData(
+		"directionalLight2",
+		&directionalLight2,
+		sizeof(DirectionalLight));*/
 
 	normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);
 	normalMapPixelShader->SetShaderResourceView("diffuseTexture", screenShaderResourceView);
@@ -568,6 +913,11 @@ void MyDemoGame::InitializeCameraMatrices()
 	camera->SetDirection(XMFLOAT3(0.0f, -0.5f, 0.1f));
 	//camera->Rotate(0, 310);
 	camera->Update();
+
+	shadowCamera = new Camera();
+	shadowCamera->SetDirection(XMFLOAT3(directionalLight.Direction.x, directionalLight.Direction.y, directionalLight.Direction.z));
+	shadowCamera->SetPosition(XMFLOAT3(directionalLight.Position.x, directionalLight.Position.y, directionalLight.Position.z));
+	shadowCamera->Update();
 }
 
 void MyDemoGame::InitializeScreenRenderToTexture()
@@ -673,6 +1023,10 @@ void MyDemoGame::UpdateScene(float dt)
 				}
 				pauseKeyDown = true;
 			}
+			else
+			{
+				pauseKeyDown = false;
+			}
 			if (GetAsyncKeyState('1') && 0x8000)
 			{
 				player.currentShip = 'a';
@@ -704,10 +1058,6 @@ void MyDemoGame::UpdateScene(float dt)
 				entities[2]->setMaterial(mineMaterial);
 				entities[2]->SetRotation(XMFLOAT3(0.0f, -1.57f, 0.0f));
 			}
-			else
-			{
-				pauseKeyDown = false;
-			}
 			// Take input, update game logic, etc.
 			enemy.spawnTimer++;
 			if (enemy.kills >= enemy.killsForNextRound)
@@ -722,7 +1072,7 @@ void MyDemoGame::UpdateScene(float dt)
 
 			if (enemy.spawnTimer * enemy.round > 3 * (1 / dt))
 			{
-				float r = rand() % 6 + 1;
+				float r = rand() % 6 + 1.0f;
 				GridTile closest = grid->getTile(r * 10 - 1);
 				XMFLOAT3 shipPos = closest.GetPosition();
 
@@ -739,7 +1089,7 @@ void MyDemoGame::UpdateScene(float dt)
 				enemy.spawnTimer = 0;
 			}
 			//update player ships
-			for (int i = 0; i < player.ships.size(); i++)
+			for (UINT i = 0; i < player.ships.size(); i++)
 			{
 					//shooting
 					player.ships[i]->projectileTimer += 1;
@@ -776,7 +1126,7 @@ void MyDemoGame::UpdateScene(float dt)
 				//update mesh
 				player.ships[i]->shipEntity->Update();
 				//update bullets
-				for (int j = 0; j < player.ships[i]->projectiles.size(); j++)
+				for (UINT j = 0; j < player.ships[i]->projectiles.size(); j++)
 				{
 					player.ships[i]->projectiles[j]->projectileEntity->Translate(XMFLOAT3(player.ships[i]->projectiles[j]->speed * dt, 0.0f, 0.0f));
 					player.ships[i]->projectiles[j]->projectileEntity->Update();
@@ -790,7 +1140,7 @@ void MyDemoGame::UpdateScene(float dt)
 					}
 
 					//check collisions with enemies
-					for (int k = 0; k < enemy.ships.size(); k++)
+					for (UINT k = 0; k < enemy.ships.size(); k++)
 					{
 						BoundingBox tempBB = enemy.ships[k]->shipEntity->GetBoundingBox();
 						BoundingBox tempBBP = player.ships[i]->projectiles[j]->projectileEntity->GetBoundingBox();
@@ -804,7 +1154,7 @@ void MyDemoGame::UpdateScene(float dt)
 				}
 			}
 			//update enemy ships
-			for (int i = 0; i < enemy.ships.size(); i++)
+			for (UINT i = 0; i < enemy.ships.size(); i++)
 			{
 				enemy.ships[i]->shipEntity->Translate(XMFLOAT3(enemy.ships[i]->speed * dt, 0.0f, 0.0f));
 				enemy.ships[i]->shipEntity->Update();
@@ -819,7 +1169,7 @@ void MyDemoGame::UpdateScene(float dt)
 					enemy.ships.erase(enemy.ships.begin() + i);
 				}
 				//see if the enemy has collided with a player ship
-				for (int k = 0; k < player.ships.size(); k++)
+				for (UINT k = 0; k < player.ships.size(); k++)
 				{
 					BoundingBox tempBB = enemy.ships[i]->shipEntity->GetBoundingBox();
 					BoundingBox tempBBP = player.ships[k]->shipEntity->GetBoundingBox();
@@ -929,35 +1279,40 @@ void MyDemoGame::DrawScene()
 		break;
 
 	case Game:
+		RenderShadowMap();
 
 		//entities[1]->setMaterial(waterMaterial);
 
 		// Set render target view to render to texture in memory
 		deviceContext->OMSetRenderTargets(1, &screenRenderTargetView, depthStencilView);
 
+		deviceContext->RSSetState(drawingRenderState);
+		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+		deviceContext->OMSetBlendState(NULL, NULL, 0xffffffff);
+		deviceContext->RSSetViewports(1, &viewport);
+
 		// Clear the buffer (erases what's on the screen)
 		deviceContext->ClearRenderTargetView(screenRenderTargetView, waterColor);
 
 		//draw base
 		entities[0]->Draw(*deviceContext, *camera);
-		//entities[1]->Draw(*deviceContext, *camera);
 		//draw all of the player ships
-		for (int i = 0; i < player.ships.size(); i++)
+		for (UINT i = 0; i < player.ships.size(); i++)
 		{
-			player.ships[i]->shipEntity->Draw(*deviceContext, *camera);
+			player.ships[i]->shipEntity->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 		}
 		//draw all of the projectiles
-		for (int i = 0; i < player.ships.size(); i++)
+		for (UINT i = 0; i < player.ships.size(); i++)
 		{
-			for (int j = 0; j < player.ships[i]->projectiles.size(); j++)
+			for (UINT j = 0; j < player.ships[i]->projectiles.size(); j++)
 			{
-				player.ships[i]->projectiles[j]->projectileEntity->Draw(*deviceContext, *camera);
+				player.ships[i]->projectiles[j]->projectileEntity->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 			}
 		}
 		//draw all of the enemy ships
-		for (int i = 0; i < enemy.ships.size(); i++)
+		for (UINT i = 0; i < enemy.ships.size(); i++)
 		{
-			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera);
+			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 		}
 
 		// Go back to the regular "back buffer"
@@ -999,13 +1354,17 @@ void MyDemoGame::DrawScene()
 		//refractPS->SetShaderResourceView("normalTexture", waterNormalMapSRV);
 
 		// Draw the water with refraction
+		normalMapPixelShader->SetShaderResourceView("waterNormalMap", waterNormalMapSRV);
+		normalMapPixelShader->SetShaderResourceView("diffuseTexture", screenShaderResourceView);
+
+		normalMapPixelShader->SetFloat3("camPos", XMFLOAT3(0.0f, 10.0f, 0.0f));
 		entities[1]->Draw(*deviceContext, *camera);
 
 		//draw the placement ship
-		entities[2]->Draw(*deviceContext, *camera);
+		entities[2]->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 
 		// Draw the grid
-		grid->Draw(*deviceContext, *camera);
+		grid->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 
 		//text
 		m_spriteBatch->Begin();
@@ -1023,7 +1382,7 @@ void MyDemoGame::DrawScene()
 
 	case Paused:
 		deviceContext->ClearRenderTargetView(renderTargetView, pauseColor);
-		for (int i = 0; i < entities.size(); i++)
+		for (UINT i = 0; i < entities.size(); i++)
 		{
 			entities[i]->Draw(*deviceContext, *camera);
 		}
@@ -1303,3 +1662,53 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	entities[2]->SetPosition(shipPos);
 }
 #pragma endregion
+
+void MyDemoGame::RenderShadowMap()
+{
+	shadowCamera->SetPosition(XMFLOAT3(directionalLight.Position.x, directionalLight.Position.y, directionalLight.Position.z));
+	shadowCamera->SetDirection(XMFLOAT3(directionalLight.Direction.x, directionalLight.Direction.y, directionalLight.Direction.z));
+	//shadowCamera->SetDirection(XMFLOAT3(0, -1, 0));
+	shadowCamera->Update();
+	//shadowCamera->UpdateProjection(AspectRatio());
+	shadowCamera->UpdateProjection(1.0f);
+
+	deviceContext->ClearRenderTargetView(renderTargetView, DirectX::Colors::CornflowerBlue);
+	deviceContext->ClearDepthStencilView(depthStencilView2, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+	ID3D11RenderTargetView* rt[1] = { 0 };
+	deviceContext->OMSetRenderTargets(
+		1,
+		rt,
+		depthStencilView2
+		);
+
+	deviceContext->RSSetState(shadowRenderState);
+	deviceContext->RSSetViewports(1, &shadowViewport);
+
+	//DRAW
+	grid->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+
+	//draw water and base
+	entities[0]->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+	entities[1]->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+	entities[2]->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+	//draw all of the player ships
+	for (UINT i = 0; i < player.ships.size(); i++)
+	{
+		player.ships[i]->shipEntity->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+	}
+	//draw all of the projectiles
+	for (UINT i = 0; i < player.ships.size(); i++)
+	{
+		for (UINT j = 0; j < player.ships[i]->projectiles.size(); j++)
+		{
+			player.ships[i]->projectiles[j]->projectileEntity->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+		}
+	}
+	//draw all of the enemy ships
+	for (UINT i = 0; i < enemy.ships.size(); i++)
+	{
+		enemy.ships[i]->shipEntity->ShadowMapDraw(*deviceContext, *shadowCamera, simpleVertShader);
+	}
+}

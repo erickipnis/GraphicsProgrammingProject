@@ -39,7 +39,8 @@ struct DirectionalLight
 {
 	XMFLOAT4 AmbientColor;
 	XMFLOAT4 DiffuseColor;
-	XMFLOAT3 Direction;
+	XMFLOAT4 Direction;
+	XMFLOAT4 Position;
 };
 
 // Demo class which extends the base DirectXGame class
@@ -66,6 +67,8 @@ private:
 	void LoadShadersAndInputLayout();
 	void InitializeCameraMatrices();
 	void InitializeScreenRenderToTexture();
+	void InitializeShadows();
+	void RenderShadowMap();
 
 private:
 	// The matrices to go from model space
@@ -116,11 +119,15 @@ private:
 	// SimpleShaders
 	SimplePixelShader* pixelShader;
 	SimplePixelShader* normalMapPixelShader;
+	SimplePixelShader* shadowPixelShader;
+	SimpleVertexShader* simpleVertShader;
 	SimpleVertexShader* vertexShader;
 	SimpleVertexShader* normalMapVertexShader;
+	SimpleVertexShader* shadowVertexShader;
 
 	// The camera
 	Camera* camera;
+	Camera* shadowCamera; //Used for rendering from the light view
 
 	// Materials
 	Material* material;
@@ -188,6 +195,22 @@ private:
 
 	// Depth Stencil State
 	ID3D11DepthStencilState* depthStencilState;
+
+	//Shadows
+	//ID3D11Buffer* shadowResource;
+	ID3D11Texture2D* shadowMap;
+	ID3D11DepthStencilView* depthStencilView2;
+	ID3D11ShaderResourceView* shadowResourceView;
+	ID3D11SamplerState* comparisonSampler;
+	ID3D11RasterizerState* drawingRenderState;
+	ID3D11RasterizerState* shadowRenderState;
+	//ID3D11Buffer* viewProjectionConstantBufferDesc;
+	D3D11_VIEWPORT shadowViewport;
+	float   shadowMapDimension;
+
+	//ID3D11SamplerState* m_comparisonSampler_point;
+	//ID3D11SamplerState* m_comparisonSampler_linear;
+	//ID3D11SamplerState* m_linearSampler;
 
 	//skybox stuff
 	/*

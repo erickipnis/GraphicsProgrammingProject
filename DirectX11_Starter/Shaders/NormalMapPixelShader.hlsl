@@ -20,14 +20,14 @@ struct DirectionalLight
 {
 	float4 AmbientColor;
 	float4 DiffuseColor;
-	float3 Direction;
+	float4 Direction;
+	float4 Position;
 };
 
 cbuffer light : register(b1)
 {
 	float time;
 	DirectionalLight directionalLight;
-	DirectionalLight directionalLight2;
 };
 
 Texture2D diffuseTexture : register(t0);
@@ -39,11 +39,11 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	//return float4(input.screenUV, 0, 1);
 	//return float4(input.worldPos, 1);
-
+	
 	float2 scrollUV1 = input.uv;
 	float2 scrollUV2 = input.uv;
 
-	float scaledTime = time * 0.01;
+	float scaledTime = time * 0.01f;
 
 	scrollUV1.x += scaledTime;
 	scrollUV1.y += scaledTime;
@@ -55,7 +55,6 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float4 waterNormalFromTexture = waterNormalMap.Sample(basicSampler, scrollUV1);
 	float4 waterNormalFromTextureScaled = waterNormalMap.Sample(basicSampler, scrollUV2 * 1.25);
-
 	//return waterNormalFromTexture;
 	
 	// Unpack normal from water normal map texture sample
@@ -94,10 +93,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float lightAmount = dot(toLight, finalWaterNormal);
 	float4 finalColor = directionalLight.DiffuseColor * lightAmount + directionalLight.AmbientColor;
 
-	// adding the second light
-	toLight = -normalize(directionalLight2.Direction);
-	lightAmount = dot(toLight, finalWaterNormal);
-	finalColor += directionalLight2.DiffuseColor * lightAmount + directionalLight2.AmbientColor;
+	//// adding the second light
+	//toLight = -normalize(directionalLight2.Direction);
+	//lightAmount = dot(toLight, finalWaterNormal);
+	//finalColor += directionalLight2.DiffuseColor * lightAmount + directionalLight2.AmbientColor;
 	
 	//float4 waterColor = float4(0.0f, 0.46667f, 0.74510f, 1.0f);
 	//float4 waterColor = float4(0.0f, 0.0f, 1.0f, 1.0f);

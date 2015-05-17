@@ -12,13 +12,13 @@ struct DirectionalLight
 {
 	float4 AmbientColor;
 	float4 DiffuseColor;
-	float3 Direction;
+	float4 Direction;
+	float4 Position;
 };
 
 cbuffer light : register(b0)
 {
 	DirectionalLight directionalLight;
-	DirectionalLight directionalLight2;
 };
 
 Texture2D diffuseTexture : register(t0);
@@ -41,10 +41,10 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float lightAmount = dot(toLight, input.normal);
 	float4 finalColor = directionalLight.DiffuseColor * lightAmount + directionalLight.AmbientColor;
 
-	// adding the second light
-	toLight = -normalize(directionalLight2.Direction);
-	lightAmount = dot(toLight, input.normal);
-	finalColor += directionalLight2.DiffuseColor * lightAmount + directionalLight2.AmbientColor;
+	//// adding the second light
+	//toLight = -normalize(directionalLight2.Direction);
+	//lightAmount = dot(toLight, input.normal);
+	//finalColor += directionalLight2.DiffuseColor * lightAmount + directionalLight2.AmbientColor;
 
 	// adding the texture color
 	finalColor *= surfaceColor;

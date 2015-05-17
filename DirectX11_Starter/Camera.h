@@ -13,12 +13,14 @@ public:
 
 	XMFLOAT4X4 GetViewMatrix() { return mViewMatrix; }
 	XMFLOAT4X4 GetProjectionMatrix() { return mProjectionMatrix; }
+	XMFLOAT3 GetPosition() { return mPosition; }
 
 	void Update();
 	void UpdateProjection(float aspectRatio);
 	void Rotate(int xDif, int yDif);
 	void SetRotation(int xDif, int yDif);
 	void SetDirection(XMFLOAT3 direction);
+	void SetPosition(XMFLOAT3 newPos);
 private:
 	GameTimer timer;
 
