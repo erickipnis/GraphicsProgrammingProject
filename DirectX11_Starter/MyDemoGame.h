@@ -11,6 +11,7 @@
 #include "Ship.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "ParticleEmitter.h"
 #include <time.h>       /* time */
 #include <SpriteFont.h>
 #include <SpriteBatch.h>
@@ -121,9 +122,12 @@ private:
 	SimplePixelShader* normalMapPixelShader;
 	SimplePixelShader* shadowPixelShader;
 	SimpleVertexShader* simpleVertShader;
+	SimplePixelShader* pSmokePixelShader;
 	SimpleVertexShader* vertexShader;
 	SimpleVertexShader* normalMapVertexShader;
 	SimpleVertexShader* shadowVertexShader;
+	SimpleVertexShader* particleVertexShader;
+
 
 	// The camera
 	Camera* camera;
@@ -150,9 +154,13 @@ private:
 	Material* subMaterial;
 	Material* battleMaterial;
 	Material* enemyMaterial;
+	// Particle Materials (use p before name to indicate particle)
+	Material* pSmokeMaterial;
+	Material* pFireMaterial;
 
 	Material* baseMaterial;
 	Material* mineMaterial;
+
 
 	// Lighting
 	DirectionalLight directionalLight;
@@ -234,4 +242,11 @@ private:
 
 	void CreateSphere(int LatLines, int LongLines);
 	*/
+
+	// Particle Emitters
+	ParticleEmitter* smokeParticleEmitter;
+	ParticleEmitter* fireParticleEmitter;
+	ParticleEmitter* fireParticleEmitter2;
+
+	ID3D11DepthStencilState* depthStencilStateParticles;
 };

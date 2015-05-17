@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Windows.h>
 #include <d3d11.h>
 #include <DirectXMath.h>
@@ -13,7 +15,7 @@ public:
 
 	XMFLOAT4X4 GetViewMatrix() { return mViewMatrix; }
 	XMFLOAT4X4 GetProjectionMatrix() { return mProjectionMatrix; }
-	XMFLOAT3 GetPosition() { return mPosition; }
+	//XMFLOAT3 GetPosition() { return mPosition; }
 
 	void Update();
 	void UpdateProjection(float aspectRatio);
@@ -21,6 +23,8 @@ public:
 	void SetRotation(int xDif, int yDif);
 	void SetDirection(XMFLOAT3 direction);
 	void SetPosition(XMFLOAT3 newPos);
+	XMFLOAT3 GetPosition();
+
 private:
 	GameTimer timer;
 

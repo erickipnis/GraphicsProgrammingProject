@@ -331,7 +331,11 @@ MyDemoGame::~MyDemoGame()
 		delete grid;
 		grid = nullptr;
 	}
-
+	if (smokeParticleEmitter != nullptr)
+	{
+		delete smokeParticleEmitter;
+		smokeParticleEmitter = nullptr;
+	}
 	if (quadVS != nullptr)
 	{
 		delete quadVS;
@@ -413,7 +417,6 @@ bool MyDemoGame::Init()
 
 	//Init Shadows
 	InitializeShadows();
-
 	// create sampler state and resource view for materials
 	ID3D11ShaderResourceView* srv;
 	ID3D11ShaderResourceView* tileSRV;
@@ -465,15 +468,36 @@ bool MyDemoGame::Init()
 
 	// Create depth stencil state
 	device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	device->CreateDepthStencilState(&dsDesc, &depthStencilStateParticles);
 
 	// Testing Blend States for transparency
-	/*ID3D11BlendState* blendState;
+	ID3D11BlendState* blendState;
+	// Blend States for transparency
+	ID3D11BlendState* blendStateAlphaAdd;
 	D3D11_BLEND_DESC blendDesc;
 	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
 	blendDesc.RenderTarget[0].BlendEnable = true;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;*/
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha= D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
+	device->CreateBlendState(&blendDesc, &blendStateAlphaAdd);
+
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+
+	ID3D11BlendState* blendStateColorAdd;
+	device->CreateBlendState(&blendDesc, &blendStateColorAdd);
+
+
+	ID3D11ShaderResourceView* waterSRV;
 	//ID3D11ShaderResourceView* waterSRV;
 	ID3D11ShaderResourceView* defaultSRV;
 	ID3D11ShaderResourceView* startSRV;
@@ -485,13 +509,15 @@ bool MyDemoGame::Init()
 	ID3D11ShaderResourceView* battleshipSRV;
 	ID3D11ShaderResourceView* submarineSRV;
 	ID3D11ShaderResourceView* enemySRV;
+	// Particle SRVs
+	ID3D11ShaderResourceView* pSmokeSRV;
+	ID3D11ShaderResourceView* pFireSRV;
 
 	ID3D11ShaderResourceView* bulletSRV;
 	ID3D11ShaderResourceView* torpedoSRV;
 	ID3D11ShaderResourceView* baseSRV;
 	ID3D11ShaderResourceView* mineSRV;
 
-	//device->CreateBlendState(&blendDesc, &blendState);
 
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"BoatUV.png", 0, &srv);
 
@@ -532,6 +558,8 @@ bool MyDemoGame::Init()
 	DirectX::CreateWICTextureFromFile(device, deviceContext, L"GameOverScreen.png", 0, &overSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"water.png", 0, &waterSRV);
 	
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"Particle_Smoke.png", 0, &pSmokeSRV);
+	DirectX::CreateWICTextureFromFile(device, deviceContext, L"Particle_Fire.png", 0, &pFireSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleDiffuse.jpg", 0, &waterSRV);
 	//DirectX::CreateWICTextureFromFile(device, deviceContext, L"pebbleNormal.jpg", 0, &waterNormalMapSRV);
 
@@ -553,6 +581,11 @@ bool MyDemoGame::Init()
 	startInstructMaterial = new Material(pixelShader, vertexShader, instructSRV, samplerState);
 	startScoreMaterial = new Material(pixelShader, vertexShader, scoreSRV, samplerState);
 	gameOverMaterial = new Material(pixelShader, vertexShader, overSRV, samplerState);
+
+	// Particle Materials
+	pSmokeMaterial = new Material(pSmokePixelShader, particleVertexShader, pSmokeSRV, samplerState);
+	pFireMaterial = new Material(pSmokePixelShader, particleVertexShader, pFireSRV, samplerState);
+
 
 	// Create the game entities
 	startScreen = new GameEntity(waterMesh, startDefaultMaterial);
@@ -597,7 +630,7 @@ bool MyDemoGame::Init()
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 	
 	// Set up the grid
-	grid = new Grid(6, 10, 1.0f, XMFLOAT3(-4.5f, 0.0f, -0.5f), tileMesh, tileMaterial);
+	grid = new Grid(6, 10, 1.0f, XMFLOAT3(-4.5f, 0.0f, -0.5f), tileMesh, tileMaterial, blendStateAlphaAdd);
 
 	//Make the player
 	player = Player();
@@ -607,7 +640,46 @@ bool MyDemoGame::Init()
 
 	m_font.reset(new SpriteFont(device, L"myfile.spritefont"));
 	m_spriteBatch.reset(new SpriteBatch(deviceContext));
+	
+	// Create a particle emiiter description to pass into the particle emitters
+	EMITTER_DESC emitDesc;
+	emitDesc.blendState = blendStateAlphaAdd;
+	emitDesc.device = device;
+	emitDesc.emitRate = 0.01f;
+	emitDesc.lifeSpan = 3.0f;
+	emitDesc.fadeTime = 1.0f;
+	emitDesc.loop = true;
+	emitDesc.material = pSmokeMaterial;
+	emitDesc.maxAcceleration = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	emitDesc.minAcceleration = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	emitDesc.maxDistance = 0.25f;
+	emitDesc.maxParticles = 2000;
+	emitDesc.maxSize = 1.0f;
+	emitDesc.minSize = 0.5f;
+	emitDesc.maxVelocity = XMFLOAT3(0.3f, 1.0f, 0.3f);
+	emitDesc.minVelocity = XMFLOAT3(-0.3f, 2.0f, -0.3f);
+	emitDesc.position = XMFLOAT3(0.0f, 1.0f, 3.0f);
+	
+	// initialize particle emitters
+	smokeParticleEmitter = new ParticleEmitter(emitDesc);
 
+	emitDesc.material = pFireMaterial;
+	emitDesc.blendState = blendStateColorAdd;
+	emitDesc.position = XMFLOAT3(0.0f, 0.0f, 3.0f);
+
+	emitDesc.emitRate = 0.01f;
+	emitDesc.maxParticles = 500;
+	emitDesc.lifeSpan = 3.0f;
+	emitDesc.loop = true;
+
+	fireParticleEmitter2 = new ParticleEmitter(emitDesc);
+
+	emitDesc.position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	fireParticleEmitter = new ParticleEmitter(emitDesc);
+
+	//make sure we draw tris correctly
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//skybox stuff
 	//CreateSphere(10, 10);
 
@@ -853,12 +925,15 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	shadowVertexShader = new SimpleVertexShader(device, deviceContext);
 	simpleVertShader = new SimpleVertexShader(device, deviceContext);
 
+	particleVertexShader = new SimpleVertexShader(device, deviceContext);
+	
 	// Initialize pixel shaders
 	pixelShader = new SimplePixelShader(device, deviceContext);
 	normalMapPixelShader = new SimplePixelShader(device, deviceContext);
 	quadPS = new SimplePixelShader(device, deviceContext);	
 	refractPS = new SimplePixelShader(device, deviceContext);
 	shadowPixelShader = new SimplePixelShader(device, deviceContext);
+	pSmokePixelShader = new SimplePixelShader(device, deviceContext);
 
 	// Load vertex shader files
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
@@ -904,6 +979,9 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	normalMapPixelShader->SetShaderResourceView("diffuseTexture", screenShaderResourceView);
 
 	normalMapPixelShader->SetFloat3("camPos", XMFLOAT3(0.0f, 10.0f, 0.0f));
+	particleVertexShader->LoadShaderFile(L"ParticleVertexShader.cso");
+	pSmokePixelShader->LoadShaderFile(L"ParticlePixelShader.cso");
+
 }
 
 // Initializes the matrices necessary to represent our 3D camera
@@ -1189,6 +1267,10 @@ void MyDemoGame::UpdateScene(float dt)
 				startScreen->setMaterial(gameOverMaterial);
 				state = Over;
 			}
+
+			smokeParticleEmitter->Update(dt);
+			fireParticleEmitter->Update(dt);
+			fireParticleEmitter2->Update(dt);
 			break;
 
 		case Paused:
@@ -1206,6 +1288,7 @@ void MyDemoGame::UpdateScene(float dt)
 			}
 			break;
 
+
 		case Over:
 			/*
 			startScreen = new GameEntity(waterMesh, gameOverMaterial);
@@ -1218,7 +1301,7 @@ void MyDemoGame::UpdateScene(float dt)
 			//camera->Rotate(0, 310);
 			camera->Update();
 			*/
-			break;
+
 	}
 
 	normalMapPixelShader->SetFloat("time", this->timer.TotalTime());
@@ -1281,6 +1364,8 @@ void MyDemoGame::DrawScene()
 	case Game:
 		RenderShadowMap();
 
+		//deviceContext->OMSetDepthStencilState(depthStencilState, 1);
+		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
 		//entities[1]->setMaterial(waterMaterial);
 
 		// Set render target view to render to texture in memory
@@ -1315,9 +1400,14 @@ void MyDemoGame::DrawScene()
 			enemy.ships[i]->shipEntity->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 		}
 
+		// Draw the grid
+		grid->Draw(*deviceContext, *camera);
+
 		// Go back to the regular "back buffer"
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
 		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
+
+
 
 		quadVS->SetShader();
 		quadPS->SetSamplerState("basicSampler", samplerState);
@@ -1362,10 +1452,14 @@ void MyDemoGame::DrawScene()
 
 		//draw the placement ship
 		entities[2]->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
-
 		// Draw the grid
 		grid->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
-
+		deviceContext->OMSetDepthStencilState(depthStencilStateParticles, 0);
+		// particles
+		smokeParticleEmitter->Draw(*deviceContext, *camera);
+		fireParticleEmitter->Draw(*deviceContext, *camera);
+		fireParticleEmitter2->Draw(*deviceContext, *camera);
+		//deviceContext->OMSetDepthStencilState(depthStencilState, 1);
 		//text
 		m_spriteBatch->Begin();
 		m_font->DrawString(m_spriteBatch.get(), healthText, XMFLOAT2(0, 0));
@@ -1374,9 +1468,13 @@ void MyDemoGame::DrawScene()
 		m_spriteBatch->End();
 
 		deviceContext->OMSetDepthStencilState(depthStencilState, 1);
-
+		
 		// Unset the shader resource
 		deviceContext->PSSetShaderResources(0, 1, unset);
+
+
+		
+
 
 		break;
 

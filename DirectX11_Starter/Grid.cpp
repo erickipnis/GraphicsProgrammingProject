@@ -4,11 +4,13 @@ Grid::Grid()
 {
 
 }
-Grid::Grid(int rows, int columns, float size, XMFLOAT3 offset, Mesh* mesh, Material* material)
+Grid::Grid(int rows, int columns, float size, XMFLOAT3 offset, Mesh* mesh, Material* material, ID3D11BlendState* blendState)
 {
 	mRows = rows;
 	mColumns = columns;
 	mSize = size;
+
+	mBlendState = blendState;
 
 	numTiles = mColumns * mRows;
 
@@ -100,10 +102,13 @@ GridTile* Grid::GetNearestTile(float xPos, float yPos, int screenWidth, int scre
 
 void Grid::Draw(ID3D11DeviceContext& device, Camera& camera)
 {
+	device.OMSetBlendState(mBlendState, NULL, 0xffffffff);
 	for (int i = 0; i < numTiles; i++)
 	{
 		tiles[i]->Draw(device, camera);
 	}
+
+	device.OMSetBlendState(NULL, NULL, 0xffffffff);
 }
 
 void Grid::ShadowMapDraw(ID3D11DeviceContext& device, Camera& camera, SimpleVertexShader* simpVertShad)
