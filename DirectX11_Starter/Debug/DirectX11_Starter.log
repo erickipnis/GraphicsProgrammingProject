@@ -1,53 +1,15 @@
-﻿Build started 5/13/2015 9:43:12 PM.
-     1>Project "\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/include/ /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D HAS_DIRECTXTK /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
-         MyDemoGame.cpp
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(103): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(111): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(207): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(289): warning C4101: 'blendState' : unreferenced local variable
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(354): warning C4101: 'creditSRV' : unreferenced local variable
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(348): warning C4101: 'waterSRV' : unreferenced local variable
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(837): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(838): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(854): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(891): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(905): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(919): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(934): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1061): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1066): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1068): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1074): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1152): warning C4018: '<' : signed/unsigned mismatch
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1331): warning C4244: 'argument' : conversion from 'LONG' to 'float', possible loss of data
-     1>\\banner.main.ad.rit.edu\students\zjc9046\igmprofile\desktop\project\project\project\directx11_starter\mydemogame.cpp(1426): warning C4244: 'argument' : conversion from 'LONG' to 'float', possible loss of data
+﻿Build started 5/17/2015 2:33:22 PM.
+     1>Project "J:\New folder\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
+     1>FxCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T ps_5_0 /Fo "J:\New folder\GraphicsProgrammingProject\Debug\ShadowPixelShader.cso" /Od /Zi Shaders\ShadowPixelShader.hlsl 
+     1>J:\New folder\GraphicsProgrammingProject\DirectX11_Starter\Shaders\ShadowPixelShader.hlsl(44,9-56): warning X3206: implicit truncation of vector type
+     1>J:\New folder\GraphicsProgrammingProject\DirectX11_Starter\Shaders\ShadowPixelShader.hlsl(87,17-116): warning X3206: implicit truncation of vector type
+         
+         compilation object save succeeded; see J:\New folder\GraphicsProgrammingProject\Debug\ShadowPixelShader.cso
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\Debug\DirectX11_Starter.exe" /INCREMENTAL /NOLOGO \\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTKAudioDX.lib \\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\packages\directxtk_desktop_2013.2015.2.25.1\build\native\../../build/native/lib/Win32/Debug/DirectXTK.lib d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\Debug\DirectX11_Starter.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\Debug\DirectX11_Starter.lib" /MACHINE:X86 Debug\BoundingBox.obj
-         Debug\Camera.obj
-         Debug\Directional.obj
-         Debug\Enemy.obj
-         Debug\GameEntity.obj
-         Debug\Grid.obj
-         Debug\GridTile.obj
-         Debug\Light.obj
-         Debug\Material.obj
-         Debug\Mesh.obj
-         Debug\MyDemoGame.obj
-         Debug\dxerr.obj
-         Debug\DirectXGame.obj
-         Debug\GameTimer.obj
-         Debug\Particle.obj
-         Debug\ParticleEmitter.obj
-         Debug\Player.obj
-         Debug\Point.obj
-         Debug\Projectile.obj
-         Debug\Ship.obj
-         Debug\SimpleShader.obj
-         DirectX11_Starter.vcxproj -> \\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\Debug\DirectX11_Starter.exe
-     1>Done Building Project "\\banner.main.ad.rit.edu\students\zjc9046\IGMProfile\Desktop\Project\Project\Project\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
+         DirectX11_Starter.vcxproj -> J:\New folder\GraphicsProgrammingProject\Debug\DirectX11_Starter.exe
+     1>Done Building Project "J:\New folder\GraphicsProgrammingProject\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:15.85
+Time Elapsed 00:00:01.53

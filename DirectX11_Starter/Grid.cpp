@@ -121,10 +121,12 @@ void Grid::ShadowMapDraw(ID3D11DeviceContext& device, Camera& camera, SimpleVert
 
 void Grid::Draw(ID3D11DeviceContext& device, Camera& camera, Camera& shadowCamera, SimplePixelShader* pixShad, SimpleVertexShader* vertShad, ID3D11ShaderResourceView* shadowSRV, ID3D11SamplerState* comparisonSampler)
 {
+	device.OMSetBlendState(mBlendState, NULL, 0xffffffff);
 	for (int i = 0; i < numTiles; i++)
 	{
 		tiles[i]->Draw(device, camera, shadowCamera, pixShad, vertShad, shadowSRV, comparisonSampler);
 	}
+	device.OMSetBlendState(NULL, NULL, 0xffffffff);
 }
 
 GridTile Grid::getTile(int i)

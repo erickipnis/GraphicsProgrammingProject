@@ -81,8 +81,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 		if (lighting == 0.f)
 		{
-			return (float4((float3)surfaceColor * (float3)directionalLight.AmbientColor, 1.0f));
+			return (float4((float3)surfaceColor * (float3)directionalLight.AmbientColor, .6f));
 		}
 	}
-	return (float4((float3)surfaceColor * (directionalLight.AmbientColor + directionalLight.DiffuseColor * lightAmount), 1.f));
+	return (float4((float3)surfaceColor * (directionalLight.AmbientColor + directionalLight.DiffuseColor * lightAmount), surfaceColor.a));
 }

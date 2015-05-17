@@ -1301,7 +1301,7 @@ void MyDemoGame::UpdateScene(float dt)
 			//camera->Rotate(0, 310);
 			camera->Update();
 			*/
-
+			break;
 	}
 
 	normalMapPixelShader->SetFloat("time", this->timer.TotalTime());
@@ -1401,9 +1401,9 @@ void MyDemoGame::DrawScene()
 		}
 
 		// Draw the grid
-		grid->Draw(*deviceContext, *camera);
+		grid->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 
-		// Go back to the regular "back buffer"
+		// Go back to the regular "back buffer" anything before here will have refraction on the water
 		deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
 		deviceContext->ClearRenderTargetView(renderTargetView, gameColor);
 
@@ -1453,7 +1453,7 @@ void MyDemoGame::DrawScene()
 		//draw the placement ship
 		entities[2]->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
 		// Draw the grid
-		grid->Draw(*deviceContext, *camera, *shadowCamera, shadowPixelShader, shadowVertexShader, shadowResourceView, comparisonSampler);
+		grid->Draw(*deviceContext, *camera);
 		deviceContext->OMSetDepthStencilState(depthStencilStateParticles, 0);
 		// particles
 		smokeParticleEmitter->Draw(*deviceContext, *camera);
